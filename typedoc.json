@@ -1,0 +1,10 @@
+{
+  "entryPoints": ["src/formula.ts"],
+  "out": "docs",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "theme": "default",
+  "name": "SF Formula Documentation"
+} 
