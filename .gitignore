@@ -3,4 +3,5 @@ dist/
 coverage/
 .DS_Store
 *.log
-docs/ 
+docs/
+src/parser.ts 

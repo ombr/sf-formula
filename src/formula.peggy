@@ -116,11 +116,11 @@ AdditiveExpression
         evaluate: function(context) {
           const leftValue = this.left.evaluate(context);
           const rightValue = this.right.evaluate(context);
-
+          
           if ((operator === '+' || operator === '&') && (typeof leftValue === 'string' || typeof rightValue === 'string')) {
             return String(leftValue) + String(rightValue);
           }
-
+          
           return operator === '+' ? leftValue + rightValue : leftValue - rightValue;
         }
       }), head);

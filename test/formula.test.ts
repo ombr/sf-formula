@@ -19,13 +19,13 @@ describe('formula_eval', () => {
   describe('Text Formulas', () => {
     testFormula('"Hello"', {}, 'Hello', 'simple text literal');
     testFormula('FirstName', { FirstName: "John" }, 'John', 'text field reference');
-    testFormula('FirstName & " " & LastName',
-      { FirstName: "John", LastName: "Doe" },
-      'John Doe',
+    testFormula('FirstName & " " & LastName', 
+      { FirstName: "John", LastName: "Doe" }, 
+      'John Doe', 
       'text concatenation');
-    testFormula('LOWER(Email)',
-      { Email: "TEST@EXAMPLE.COM" },
-      'test@example.com',
+    testFormula('LOWER(Email)', 
+      { Email: "TEST@EXAMPLE.COM" }, 
+      'test@example.com', 
       'text case conversion');
   });
 
@@ -33,69 +33,69 @@ describe('formula_eval', () => {
   // Numeric Operations
   describe('Numeric Formulas', () => {
     testFormula('Amount', { Amount: 100 }, 100, 'numeric field reference');
-    testFormula('Amount * Quantity',
-      { Amount: 10, Quantity: 5 },
-      50,
+    testFormula('Amount * Quantity', 
+      { Amount: 10, Quantity: 5 }, 
+      50, 
       'numeric multiplication');
-    testFormula('ROUND(Amount, 2)',
-      { Amount: 100.456 },
-      100.46,
+    testFormula('ROUND(Amount, 2)', 
+      { Amount: 100.456 }, 
+      100.46, 
       'rounding numbers');
-    testFormula('ABS(Balance)',
-      { Balance: -50 },
-      50,
+    testFormula('ABS(Balance)', 
+      { Balance: -50 }, 
+      50, 
       'absolute value');
   });
 
   // Logical Operations
   describe('Logical Formulas', () => {
-    testFormula('IsActive',
-      { IsActive: true },
-      true,
+    testFormula('IsActive', 
+      { IsActive: true }, 
+      true, 
       'boolean field reference');
-    testFormula('Amount > 1000',
-      { Amount: 1500 },
-      true,
+    testFormula('Amount > 1000', 
+      { Amount: 1500 }, 
+      true, 
       'numeric comparison');
-    testFormula('Status = "Open"',
-      { Status: "Open" },
-      true,
+    testFormula('Status = "Open"', 
+      { Status: "Open" }, 
+      true, 
       'text comparison');
-    testFormula('AND(IsActive, Amount > 0)',
-      { IsActive: true, Amount: 100 },
-      true,
+    testFormula('AND(IsActive, Amount > 0)', 
+      { IsActive: true, Amount: 100 }, 
+      true, 
       'logical AND');
-    testFormula('OR(IsClosed, Amount = 0)',
-      { IsClosed: false, Amount: 0 },
-      true,
+    testFormula('OR(IsClosed, Amount = 0)', 
+      { IsClosed: false, Amount: 0 }, 
+      true, 
       'logical OR');
   });
 
   // Date Operations
   describe('Date Formulas', () => {
-    testFormula('TODAY()',
-      {},
-      expect.any(Date),
+    testFormula('TODAY()', 
+      {}, 
+      expect.any(Date), 
       'current date');
-    testFormula('DATEVALUE(CreatedDate)',
-      { CreatedDate: "2023-12-25" },
-      new Date("2023-12-25"),
+    testFormula('DATEVALUE(CreatedDate)', 
+      { CreatedDate: "2023-12-25" }, 
+      new Date("2023-12-25"), 
       'date conversion');
-    testFormula('DAYS(DueDate, CreatedDate)',
-      { DueDate: "2023-12-25", CreatedDate: "2023-12-20" },
-      5,
+    testFormula('DAYS(DueDate, CreatedDate)', 
+      { DueDate: "2023-12-25", CreatedDate: "2023-12-20" }, 
+      5, 
       'days between dates');
   });
 
   // Conditional Logic
   describe('Conditional Formulas', () => {
-    testFormula('IF(Amount > 1000, "High", "Low")',
-      { Amount: 1500 },
-      "High",
+    testFormula('IF(Amount > 1000, "High", "Low")', 
+      { Amount: 1500 }, 
+      "High", 
       'simple if condition');
-    testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)',
-      { Status: "In Progress" },
-      2,
+    testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)', 
+      { Status: "In Progress" }, 
+      2, 
       'case statement');
   });
 
