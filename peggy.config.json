@@ -1,0 +1,9 @@
+{
+  "cache": false,
+  "format": "es",
+  "output": "source",
+  "dts": true,
+  "returnTypes": {
+    "parse": "string"
+  }
+}

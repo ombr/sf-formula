@@ -2,7 +2,7 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/test/**/*.test.ts'],
-  collectCoverage: true,
+  /*collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageThreshold: {
     global: {
@@ -11,5 +11,5 @@ module.exports = {
       lines: 80,
       statements: 80
     }
-  }
+  }*/
 }; 

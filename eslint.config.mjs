@@ -10,6 +10,6 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ["dist", ".commitlintrc.js", "coverage", ".config/*", "jest.config.js"]
+    ignores: ["dist", ".commitlintrc.js", "coverage", ".config/*", "jest.config.js", "src/parser.ts"]
   }
 ];

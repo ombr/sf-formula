@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2020",
     "module": "commonjs",
-    "lib": ["es2020"],
+    "lib": ["es2022"],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -27,5 +27,5 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "test", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "test", "**/*.test.ts", "src/parser.ts"]
 } 
