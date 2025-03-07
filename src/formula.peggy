@@ -18,7 +18,7 @@ Expression
   = LogicalExpression
 
 LogicalExpression
-  = head:ComparisonExpression tail:(_ ("&&" / "||") _ ComparisonExpression)* {
+  = head:ComparisonExpression tail:(_ LogicalOperator _ ComparisonExpression)* {
       return tail.reduce((result, [, operator, , term]) => ({
         type: 'LogicalExpression',
         operator: operator,
@@ -27,10 +27,19 @@ LogicalExpression
         evaluate: function(context) {
           const leftValue = this.left.evaluate(context);
           const rightValue = this.right.evaluate(context);
-          return operator === '&&' ? leftValue && rightValue : leftValue || rightValue;
+          switch(operator.toLowerCase()) {
+            case '&&':
+            case 'and': return leftValue && rightValue;
+            case '||':
+            case 'or': return leftValue || rightValue;
+            default: throw new Error(`Unknown logical operator: ${operator}`);
+          }
         }
       }), head);
     }
+
+LogicalOperator
+  = "&&" / "AND" / "||" / "OR"
 
 ComparisonExpression
   = head:AdditiveExpression tail:(_ ComparisonOperator _ AdditiveExpression)* {
@@ -43,7 +52,8 @@ ComparisonExpression
           const leftValue = this.left.evaluate(context);
           const rightValue = this.right.evaluate(context);
           switch(operator) {
-            case '==': return leftValue == rightValue;
+            case '==':
+            case '=': return leftValue == rightValue;
             case '!=': return leftValue != rightValue;
             case '>': return leftValue > rightValue;
             case '>=': return leftValue >= rightValue;
@@ -56,7 +66,7 @@ ComparisonExpression
     }
 
 ComparisonOperator
-  = "==" / "!=" / ">=" / "<=" / ">" / "<"
+  = "==" / "=" / "!=" / ">=" / "<=" / ">" / "<"
 
 Term
   = head:Factor tail:(_ ("*" / "/") _ Factor)* {
@@ -79,7 +89,15 @@ Factor
   / BooleanLiteral
   / FunctionCall
   / FieldReference
-  / "(" _ expr:Expression _ ")" { return expr; }
+  / "(" _ expr:Expression _ ")" {
+      return {
+        type: "ParenthesisExpression",
+        expression: expr,
+        evaluate: function(context) {
+          return this.expression.evaluate(context);
+        }
+      };
+    }
 
 Number
   = digits:[0-9]+ {
@@ -154,23 +172,58 @@ PrimaryExpression
   / "(" expr:Expression ")" { return expr; }
 
 FunctionCall
-  = name:("LOWER") _ "(" _ args:ArgumentList? _ ")" {
+  = name:("LOWER" / "ROUND" / "ABS" / "IF" / "CASE") _ "(" _ args:ArgumentList? _ ")" {
       return {
         type: "FunctionCall",
         name: name,
         arguments: args || [],
         evaluate: function(context) {
-          if (this.name === "LOWER") {
-            if (this.arguments.length !== 1) {
-              throw new Error("LOWER function requires exactly one argument");
-            }
-            const arg = this.arguments[0].evaluate(context);
-            if (typeof arg !== 'string') {
-              throw new Error("LOWER function requires a string argument");
-            }
-            return arg.toLowerCase();
+          const args = this.arguments;
+
+          switch(this.name) {
+            case "LOWER":
+              if (args.length !== 1) throw new Error("LOWER function requires exactly one argument");
+              const strArg = args[0].evaluate(context);
+              if (typeof strArg !== 'string') throw new Error("LOWER function requires a string argument");
+              return strArg.toLowerCase();
+
+            case "ROUND":
+              if (args.length !== 1 && args.length !== 2) throw new Error("ROUND function requires one or two arguments");
+              const numArg = args[0].evaluate(context);
+              if (typeof numArg !== 'number') throw new Error("ROUND function requires a number as first argument");
+              const decimals = args.length === 2 ? args[1].evaluate(context) : 0;
+              if (typeof decimals !== 'number') throw new Error("ROUND function requires a number as second argument");
+              const factor = Math.pow(10, decimals);
+              return Math.round(numArg * factor) / factor;
+
+            case "ABS":
+              if (args.length !== 1) throw new Error("ABS function requires exactly one argument");
+              const absArg = args[0].evaluate(context);
+              if (typeof absArg !== 'number') throw new Error("ABS function requires a number argument");
+              return Math.abs(absArg);
+
+            case "IF":
+              if (args.length !== 3) throw new Error("IF function requires exactly three arguments");
+              const condition = args[0].evaluate(context);
+              return condition ? args[1].evaluate(context) : args[2].evaluate(context);
+
+            case "CASE":
+              if (args.length < 3) throw new Error("CASE function requires at least 3 arguments");
+              if (args.length % 2 === 0) throw new Error("CASE function requires an odd number of arguments (condition1, result1, ..., defaultResult)");
+
+              // Check each condition-result pair
+              for (let i = 0; i < args.length - 1; i += 2) {
+                const condition = args[i].evaluate(context);
+                if (condition) {
+                  return args[i + 1].evaluate(context);
+                }
+              }
+              // Return default (last argument) if no conditions are true
+              return args[args.length - 1].evaluate(context);
+
+            default:
+              throw new Error(`Unknown function: ${this.name}`);
           }
-          throw new Error(`Unknown function: ${this.name}`);
         }
       };
     }

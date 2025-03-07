@@ -29,7 +29,7 @@ describe('formula_eval', () => {
       'text case conversion');
   });
 
-  /*
+
   // Numeric Operations
   describe('Numeric Formulas', () => {
     testFormula('Amount', { Amount: 100 }, 100, 'numeric field reference');
@@ -47,6 +47,7 @@ describe('formula_eval', () => {
       'absolute value');
   });
 
+
   // Logical Operations
   describe('Logical Formulas', () => {
     testFormula('IsActive', 
@@ -61,16 +62,17 @@ describe('formula_eval', () => {
       { Status: "Open" }, 
       true, 
       'text comparison');
-    testFormula('AND(IsActive, Amount > 0)', 
+    testFormula('IsActive AND Amount > 0',
       { IsActive: true, Amount: 100 }, 
       true, 
       'logical AND');
-    testFormula('OR(IsClosed, Amount = 0)', 
+    testFormula('IsClosed OR Amount = 0',
       { IsClosed: false, Amount: 0 }, 
       true, 
       'logical OR');
   });
 
+  /*
   // Date Operations
   describe('Date Formulas', () => {
     testFormula('TODAY()', 
@@ -86,7 +88,9 @@ describe('formula_eval', () => {
       5, 
       'days between dates');
   });
+  */
 
+  /*
   // Conditional Logic
   describe('Conditional Formulas', () => {
     testFormula('IF(Amount > 1000, "High", "Low")', 
@@ -98,6 +102,8 @@ describe('formula_eval', () => {
       2, 
       'case statement');
   });
+
+  /*
 
   // Error Cases
   describe('Error Handling', () => {

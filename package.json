@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
-    "generate-parser": "peggy --extra-options-file peggy.config.json -o src/parser.ts src/formula.peggy && { echo '//@ts-nocheck'; cat src/parser.ts; } >> parser.ts && mv {,src/}parser.ts",
+    "generate-parser": "peggy --extra-options-file peggy.config.json -o src/parser.ts src/formula.peggy && { echo '//@ts-nocheck'; cat src/parser.ts; } >> parser.ts && mv parser.ts src/parser.ts",
     "build": "npm run clean && npm run generate-parser && tsc -p tsconfig.json",
     "test": "npm run build && jest",
     "lint": "eslint . --ext .ts",
