@@ -98,8 +98,8 @@ MultiplicativeExpression
 
 Factor
   = Number
-  / StringLiteral
-  / BooleanLiteral
+  / String
+  / Boolean
   / FunctionCall
   / Variable
   / "(" _ expr:Expression _ ")" {
@@ -220,14 +220,14 @@ ArgumentList
     }
 
 Literal
-  = StringLiteral
-  / NumberLiteral
-  / BooleanLiteral
+  = String
+  / Number
+  / Boolean
 
-StringLiteral
+String
   = '"' chars:StringCharacter* '"' {
       return {
-        type: "StringLiteral",
+        type: "String",
         value: chars.join(""),
         evaluate: function(context) {
           return this.value;
@@ -247,20 +247,10 @@ EscapeSequence
   / "r"  { return "\r"; }
   / "t"  { return "\t"; }
 
-NumberLiteral
-  = minus:"-"? digits:[0-9]+ decimal:("." [0-9]+)?
-    { return {
-        type: "NumberLiteral",
-        value: parseFloat((minus || "") + digits.join("") + (decimal ? decimal[0] + decimal[1].join("") : "")),
-        evaluate: function(context) { return this.value; },
-        serialize: function() { return this.value.toString(); }
-      };
-    }
-
-BooleanLiteral
+Boolean
   = value:("true" / "false") {
       return {
-        type: "BooleanLiteral",
+        type: "Boolean",
         value: value === "true",
         evaluate: function(context) {
           return this.value;
