@@ -10,6 +10,7 @@ LogicalExpression
         type: 'LogicalExpression',
         operator: operator,
         elements: [result, term],
+        serialize: function() { return `${result.serialize()} ${operator} ${term.serialize()}` },
         evaluate: function(context) {
           const leftValue = this.elements[0].evaluate(context);
           const rightValue = this.elements[1].evaluate(context);
@@ -33,6 +34,7 @@ ComparisonExpression
         type: 'ComparisonExpression',
         operator: operator,
         elements: [result, term],
+        serialize: function() { return `${result.serialize()} ${operator} ${term.serialize()}` },
         evaluate: function(context) {
           const leftValue = this.elements[0].evaluate(context);
           const rightValue = this.elements[1].evaluate(context);
@@ -59,6 +61,7 @@ AdditiveExpression
         type: 'BinaryExpression',
         operator: operator,
         elements: [result, term],
+        serialize: function() { return `${result.serialize()} ${operator} ${term.serialize()}` },
         evaluate: function(context) {
           const leftValue = this.elements[0].evaluate(context);
           const rightValue = this.elements[1].evaluate(context);
@@ -78,6 +81,7 @@ MultiplicativeExpression
         type: 'BinaryExpression',
         operator: operator,
         elements: [result, factor],
+        serialize: function() { return `${result.serialize()} ${operator} ${factor.serialize()}` },
         evaluate: function(context) {
           const leftValue = this.elements[0].evaluate(context);
           const rightValue = this.elements[1].evaluate(context);
@@ -102,6 +106,7 @@ Factor
       return {
         type: "ParenthesisExpression",
         expression: expr,
+        serialize: function() { return `(${expr.serialize()})` },
         evaluate: function(context) {
           return this.expression.evaluate(context);
         }
@@ -113,6 +118,7 @@ Number
       return {
         type: 'Number',
         value: parseInt(digits.join(""), 10),
+        serialize: function() { return digits.join(""); },
         evaluate: function(context) {
           return this.value;
         }
@@ -123,26 +129,32 @@ Variable
   = first:[A-Za-z] rest:[A-Za-z0-9_]* {
       return {
         type: "Variable",
-        name: first + rest.join(""),
+        value: first + rest.join(""),
+        serialize: function() { return `${this.value}` },
         evaluate: function(context) {
-          if (context && context.hasOwnProperty(this.name)) {
-            return context[this.name];
+          if (context && context.hasOwnProperty(this.value)) {
+            return context[this.value];
           }
-          throw new Error(`Variable "${this.name}" not found in context`);
+          throw new Error(`Variable "${this.value}" not found in context`);
         }
       };
     }
 
 FunctionCall
-  = name:FunctionName _ "(" _ args:ArgumentList? _ ")" {
+  = value:FunctionName _ "(" _ elements:ArgumentList? _ ")" {
       return {
         type: "FunctionCall",
-        name: name,
-        arguments: args || [],
+        value: value,
+        elements: elements || [],
+        serialize: function() { return `${value}(${
+          this.elements.map(
+            (e)=>e.serialize()
+            ).join(', ')
+          })` },
         evaluate: function(context) {
-          const args = this.arguments;
+          const args = this.elements;
 
-          switch(this.name) {
+          switch(this.value) {
             case "LOWER":
               if (args.length !== 1) throw new Error("LOWER function requires exactly one argument");
               const strArg = args[0].evaluate(context);
@@ -184,7 +196,7 @@ FunctionCall
               return args[args.length - 1].evaluate(context);
 
             default:
-              throw new Error(`Unknown function: ${this.name}`);
+              throw new Error(`Unknown function: ${this.value}`);
           }
         }
       };
@@ -219,7 +231,8 @@ StringLiteral
         value: chars.join(""),
         evaluate: function(context) {
           return this.value;
-        }
+        },
+        serialize: function() { return `"${this.value}"`; }
       };
     }
 
@@ -239,9 +252,8 @@ NumberLiteral
     { return {
         type: "NumberLiteral",
         value: parseFloat((minus || "") + digits.join("") + (decimal ? decimal[0] + decimal[1].join("") : "")),
-        evaluate: function(context) {
-          return this.value;
-        }
+        evaluate: function(context) { return this.value; },
+        serialize: function() { return this.value.toString(); }
       };
     }
 
@@ -252,7 +264,8 @@ BooleanLiteral
         value: value === "true",
         evaluate: function(context) {
           return this.value;
-        }
+        },
+        evaluate: function(context) { return this.value ? 'true' : 'false'; },
       };
     }
 

@@ -1,9 +1,13 @@
-import { Context, formulaEval } from '../src/formula';
+import { Context, formulaEval, parse } from '../src/formula';
 
 describe('formula_eval', () => {
   function testFormula(formula: string, context: Context, expected: unknown, description: string) {
-    it(description, () => {
+    const title = `${description} ${formula} => ${JSON.stringify(expected)}`;
+    it(title, () => {
       expect(formulaEval(formula, context)).toBe(expected);
+    });
+    it(`serialize | ${title}`, () => {
+      expect(parse(formula, context).serialize()).toBe(formula);
     });
   }
 
