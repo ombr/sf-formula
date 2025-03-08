@@ -102,7 +102,7 @@ Factor
   = Number
   / String
   / Boolean
-  / FunctionCall
+  / Function
   / Variable
   / "(" _ expr:Expression _ ")" {
       return {
@@ -142,10 +142,10 @@ Variable
       };
     }
 
-FunctionCall
+Function
   = value:FunctionName _ "(" _ elements:ArgumentList? _ ")" {
       return {
-        type: "FunctionCall",
+        type: "Function",
         value: value,
         elements: elements || [],
         serialize: function() { return `${value}(${
