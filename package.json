@@ -2,8 +2,8 @@
   "name": "sf-formula",
   "version": "1.1.1",
   "description": "Formula evaluation engine",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/formula.js",
+  "types": "dist/formula.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "generate-parser": "peggy --extra-options-file peggy.config.json -o src/parser.ts src/formula.peggy && { echo '//@ts-nocheck'; cat src/parser.ts; } >> parser.ts && mv parser.ts src/parser.ts",
