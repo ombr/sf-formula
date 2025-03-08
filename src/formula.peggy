@@ -9,11 +9,10 @@ LogicalExpression
       return tail.reduce((result, [, operator, , term]) => ({
         type: 'LogicalExpression',
         operator: operator,
-        left: result,
-        right: term,
+        elements: [result, term],
         evaluate: function(context) {
-          const leftValue = this.left.evaluate(context);
-          const rightValue = this.right.evaluate(context);
+          const leftValue = this.elements[0].evaluate(context);
+          const rightValue = this.elements[1].evaluate(context);
           switch(operator.toLowerCase()) {
             case '&&':
             case 'and': return leftValue && rightValue;
@@ -33,11 +32,10 @@ ComparisonExpression
       return tail.reduce((result, [, operator, , term]) => ({
         type: 'ComparisonExpression',
         operator: operator,
-        left: result,
-        right: term,
+        elements: [result, term],
         evaluate: function(context) {
-          const leftValue = this.left.evaluate(context);
-          const rightValue = this.right.evaluate(context);
+          const leftValue = this.elements[0].evaluate(context);
+          const rightValue = this.elements[1].evaluate(context);
           switch(operator) {
             case '==':
             case '=': return leftValue == rightValue;
@@ -60,11 +58,10 @@ AdditiveExpression
       return tail.reduce((result, [, operator, , term]) => ({
         type: 'BinaryExpression',
         operator: operator,
-        left: result,
-        right: term,
+        elements: [result, term],
         evaluate: function(context) {
-          const leftValue = this.left.evaluate(context);
-          const rightValue = this.right.evaluate(context);
+          const leftValue = this.elements[0].evaluate(context);
+          const rightValue = this.elements[1].evaluate(context);
 
           if ((operator === '+' || operator === '&') && (typeof leftValue === 'string' || typeof rightValue === 'string')) {
             return String(leftValue) + String(rightValue);
@@ -80,11 +77,10 @@ MultiplicativeExpression
       return tail.reduce((result, [, operator, , factor]) => ({
         type: 'BinaryExpression',
         operator: operator,
-        left: result,
-        right: factor,
+        elements: [result, factor],
         evaluate: function(context) {
-          const leftValue = this.left.evaluate(context);
-          const rightValue = this.right.evaluate(context);
+          const leftValue = this.elements[0].evaluate(context);
+          const rightValue = this.elements[1].evaluate(context);
           if (operator === '*') {
             return leftValue * rightValue;
           }
