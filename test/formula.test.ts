@@ -73,6 +73,22 @@ describe('formula_eval', () => {
       { IsClosed: false, Amount: 0 }, 
       true, 
       'logical OR');
+    testFormula('ISBLANK(FirstName)',
+      { FirstName: "" },
+      true,
+      'check if field is blank');
+    testFormula('ISBLANK(FirstName)',
+      { FirstName: "Luc" },
+      false,
+      'check if field is blank');
+    testFormula('NOT(IsActive)',
+      { IsActive: false },
+      true,
+      'negation of boolean value');
+    testFormula('NOT(IsActive)',
+      { IsActive: true },
+      false,
+      'negation of boolean value');
   });
 
   /*

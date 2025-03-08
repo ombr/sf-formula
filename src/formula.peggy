@@ -105,7 +105,7 @@ Factor
   / "(" _ expr:Expression _ ")" {
       return {
         type: "ParenthesisExpression",
-        expression: expr,
+        elements: [expr],
         serialize: function() { return `(${expr.serialize()})` },
         evaluate: function(context) {
           return this.expression.evaluate(context);
@@ -195,6 +195,16 @@ FunctionCall
               // Return default (last argument) if no conditions are true
               return args[args.length - 1].evaluate(context);
 
+            case "ISBLANK":
+              if (args.length !== 1) throw new Error("ISBLANK function requires exactly one argument");
+              const isBlankArg = args[0].evaluate(context);
+              return isBlankArg === null || isBlankArg === undefined || (typeof isBlankArg === 'string' && isBlankArg.trim() === '');
+
+            case "NOT":
+              if (args.length !== 1) throw new Error("NOT function requires exactly one argument");
+              const notArg = args[0].evaluate(context);
+              return !notArg;
+
             default:
               throw new Error(`Unknown function: ${this.value}`);
           }
@@ -212,6 +222,8 @@ FunctionName
   / "TODAY"
   / "DATEVALUE"
   / "DAYS"
+  / "ISBLANK"
+  / "NOT"
   / [A-Z][A-Z_]*
 
 ArgumentList
@@ -255,7 +267,7 @@ Boolean
         evaluate: function(context) {
           return this.value;
         },
-        evaluate: function(context) { return this.value ? 'true' : 'false'; },
+        serialize: function(context) { return this.value ? 'true' : 'false'; },
       };
     }
 
