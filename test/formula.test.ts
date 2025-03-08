@@ -7,7 +7,7 @@ describe('formula_eval', () => {
       expect(formulaEval(formula, context)).toBe(expected);
     });
     it(`serialize | ${title}`, () => {
-      expect(parse(formula, context).serialize()).toBe(formula);
+      expect(parse(formula, context).serialize()).toBe(formula.trim());
     });
   }
 
@@ -17,6 +17,14 @@ describe('formula_eval', () => {
         .toThrow(expectedError);
     });
   }*/
+
+  // Some basic usecases
+  describe('Whitespaces', () => {
+    testFormula(' "Hello"', {}, 'Hello', 'starting with whitespace');
+    testFormula('"Hello" ', {}, 'Hello', 'ending with whitespace');
+    testFormula('  12', {}, 12, 'ending with whitespace');
+    testFormula('12 ', {}, 12, 'ending with whitespace');
+  });
 
   // Text Operations
   describe('Text Formulas', () => {

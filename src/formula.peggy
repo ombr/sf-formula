@@ -2,7 +2,9 @@ Formula
   = Expression
 
 Expression
-  = LogicalExpression
+  = _ expr:LogicalExpression _ {
+    return expr;
+  }
 
 LogicalExpression
   = head:ComparisonExpression tail:(_ LogicalOperator _ ComparisonExpression)* {
