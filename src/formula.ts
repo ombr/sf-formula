@@ -4,7 +4,7 @@ export { parse };
 export type Context = Record<string, unknown>;
 export class FormulaError extends Error {};
 
-export function formula_eval(formula: string, context: Context): unknown {
+export function formulaEval(formula: string, context: Context): unknown {
   const res = parse(formula, context)
   if (typeof formula !== 'string') throw new FormulaError('Formula should be a string');
   if (formula === '') throw new FormulaError('Formula text cannot be null or empty');

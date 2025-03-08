@@ -1,9 +1,9 @@
-import { Context, formula_eval } from '../src/formula';
+import { Context, formulaEval } from '../src/formula';
 
 describe('formula_eval', () => {
   function testFormula(formula: string, context: Context, expected: unknown, description: string) {
     it(description, () => {
-      expect(formula_eval(formula, context)).toBe(expected);
+      expect(formulaEval(formula, context)).toBe(expected);
     });
   }
 

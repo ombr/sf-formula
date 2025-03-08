@@ -1,6 +1,6 @@
 {
   "name": "sf-formula",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Formula evaluation engine",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -54,6 +54,9 @@
       "main"
     ]
   },
+  "files": [
+    "src/parser.ts"
+  ],
   "engines": {
     "node": ">=20.0.0",
     "npm": ">=10.0.0"
