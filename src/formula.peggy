@@ -1,16 +1,3 @@
-// Formula Grammar
-
-{
-  function createBinaryOp(operator, left, right) {
-    return {
-      type: 'BinaryOperation',
-      operator: operator,
-      left: left,
-      right: right
-    };
-  }
-}
-
 Formula
   = Expression
 
@@ -68,62 +55,6 @@ ComparisonExpression
 ComparisonOperator
   = "==" / "=" / "!=" / ">=" / "<=" / ">" / "<"
 
-Term
-  = head:Factor tail:(_ ("*" / "/") _ Factor)* {
-      return tail.reduce((result, [, operator, , factor]) => ({
-        type: 'BinaryExpression',
-        operator: operator,
-        left: result,
-        right: factor,
-        evaluate: function(context) {
-          const leftValue = this.left.evaluate(context);
-          const rightValue = this.right.evaluate(context);
-          return operator === '*' ? leftValue * rightValue : leftValue / rightValue;
-        }
-      }), head);
-    }
-
-Factor
-  = Number
-  / StringLiteral
-  / BooleanLiteral
-  / FunctionCall
-  / FieldReference
-  / "(" _ expr:Expression _ ")" {
-      return {
-        type: "ParenthesisExpression",
-        expression: expr,
-        evaluate: function(context) {
-          return this.expression.evaluate(context);
-        }
-      };
-    }
-
-Number
-  = digits:[0-9]+ {
-      return {
-        type: 'Number',
-        value: parseInt(digits.join(""), 10),
-        evaluate: function(context) {
-          return this.value;
-        }
-      };
-    }
-
-FieldReference
-  = first:[A-Za-z] rest:[A-Za-z0-9_]* {
-      return {
-        type: "FieldReference",
-        name: first + rest.join(""),
-        evaluate: function(context) {
-          if (context && context.hasOwnProperty(this.name)) {
-            return context[this.name];
-          }
-          throw new Error(`Variable "${this.name}" not found in context`);
-        }
-      };
-    }
-
 AdditiveExpression
   = head:MultiplicativeExpression tail:(_ ("+" / "-" / "&") _ MultiplicativeExpression)* {
       return tail.reduce((result, [, operator, , term]) => ({
@@ -134,11 +65,11 @@ AdditiveExpression
         evaluate: function(context) {
           const leftValue = this.left.evaluate(context);
           const rightValue = this.right.evaluate(context);
-          
+
           if ((operator === '+' || operator === '&') && (typeof leftValue === 'string' || typeof rightValue === 'string')) {
             return String(leftValue) + String(rightValue);
           }
-          
+
           return operator === '+' ? leftValue + rightValue : leftValue - rightValue;
         }
       }), head);
@@ -165,14 +96,49 @@ MultiplicativeExpression
       }), head);
     }
 
-PrimaryExpression
-  = Literal
+Factor
+  = Number
+  / StringLiteral
+  / BooleanLiteral
   / FunctionCall
-  / FieldReference
-  / "(" expr:Expression ")" { return expr; }
+  / Variable
+  / "(" _ expr:Expression _ ")" {
+      return {
+        type: "ParenthesisExpression",
+        expression: expr,
+        evaluate: function(context) {
+          return this.expression.evaluate(context);
+        }
+      };
+    }
+
+Number
+  = digits:[0-9]+ {
+      return {
+        type: 'Number',
+        value: parseInt(digits.join(""), 10),
+        evaluate: function(context) {
+          return this.value;
+        }
+      };
+    }
+
+Variable
+  = first:[A-Za-z] rest:[A-Za-z0-9_]* {
+      return {
+        type: "Variable",
+        name: first + rest.join(""),
+        evaluate: function(context) {
+          if (context && context.hasOwnProperty(this.name)) {
+            return context[this.name];
+          }
+          throw new Error(`Variable "${this.name}" not found in context`);
+        }
+      };
+    }
 
 FunctionCall
-  = name:("LOWER" / "ROUND" / "ABS" / "IF" / "CASE") _ "(" _ args:ArgumentList? _ ")" {
+  = name:FunctionName _ "(" _ args:ArgumentList? _ ")" {
       return {
         type: "FunctionCall",
         name: name,
@@ -276,7 +242,10 @@ NumberLiteral
   = minus:"-"? digits:[0-9]+ decimal:("." [0-9]+)?
     { return {
         type: "NumberLiteral",
-        value: parseFloat((minus || "") + digits.join("") + (decimal ? decimal[0] + decimal[1].join("") : ""))
+        value: parseFloat((minus || "") + digits.join("") + (decimal ? decimal[0] + decimal[1].join("") : "")),
+        evaluate: function(context) {
+          return this.value;
+        }
       };
     }
 

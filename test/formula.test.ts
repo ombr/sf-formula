@@ -3,7 +3,6 @@ import { Context, formula_eval } from '../src/formula';
 describe('formula_eval', () => {
   function testFormula(formula: string, context: Context, expected: unknown, description: string) {
     it(description, () => {
-      console.log('With', formula, context);
       expect(formula_eval(formula, context)).toBe(expected);
     });
   }
@@ -90,36 +89,35 @@ describe('formula_eval', () => {
   });
   */
 
-  /*
   // Conditional Logic
   describe('Conditional Formulas', () => {
     testFormula('IF(Amount > 1000, "High", "Low")', 
       { Amount: 1500 }, 
       "High", 
       'simple if condition');
-    testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)', 
+    /*testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)',
       { Status: "In Progress" }, 
       2, 
-      'case statement');
+      'case statement');*/
   });
 
-  /*
 
   // Error Cases
   describe('Error Handling', () => {
-    testFormulaError(
-      'NonexistentField',
-      {},
-      'Field "NonexistentField" not found in context',
-      'undefined field reference'
-    );
-
-    testFormulaError(
+    /*testFormulaError(
       '',
       {},
-      'Formula cannot be empty',
-      'empty formula'
+      '',
+      ''
+    );*/
+    /*testFormulaError(
+      'NonexistentVariable',
+      {},
+      'Field "NonexistentVariable" not found in context',
+      'undefined variable reference'
     );
+
+    /*
 
     testFormulaError(
       'DIVIDE(Amount, ZeroValue)',
@@ -134,12 +132,13 @@ describe('formula_eval', () => {
       'Invalid formula syntax',
       'invalid formula syntax'
     );
+    */
 
-    testFormulaError(
+    /*testFormulaError(
       'INVALID_FUNCTION(123)',
       {},
       'Unknown function: INVALID_FUNCTION',
       'invalid function name'
-    );
-  });*/
+    );*/
+  });
 });
