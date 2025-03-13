@@ -19,7 +19,7 @@ describe('formula_eval', () => {
   }*/
 
   // Some basic usecases
-  /*describe('Basics', () => {
+  describe('Basics', () => {
     testFormula('"Hello"', {}, 'Hello', 'String');
     testFormula('12', {}, 12, 'Number');
     testFormula('true', {}, true, 'Number');
@@ -40,11 +40,11 @@ describe('formula_eval', () => {
   // Text Operations
   describe('Variables', () => {
     testFormula('FirstName', { FirstName: "John" }, 'John', 'text field reference');
-    /*testFormula('FirstName & " " & LastName',
+    testFormula('FirstName & " " & LastName',
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
-    testFormula('LOWER(Email)', 
+    /*testFormula('LOWER(Email)',
       { Email: "TEST@EXAMPLE.COM" }, 
       'test@example.com', 
       'text case conversion');*/

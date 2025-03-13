@@ -2,8 +2,9 @@
 
 AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
-Term { Number | String | Boolean | ParenExpr }
+Term { Number | String | Boolean | Variable | ParenExpr }
 ParenExpr { "(" AddExpr ")" }
+Variable { Identifier }
 
 @skip { space }
 
@@ -14,5 +15,7 @@ ParenExpr { "(" AddExpr ")" }
   Boolean { "true" | "false" }
   AddOperator { "+" | "-" | "&" }
   MulOperator { "*" }
+  Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
+  @precedence {Boolean, Identifier}
 }
 

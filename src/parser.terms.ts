@@ -7,6 +7,8 @@ export const
   Number = 5,
   String = 6,
   Boolean = 7,
-  ParenExpr = 8,
-  MulOperator = 9,
-  AddOperator = 10
+  Variable = 8,
+  Identifier = 9,
+  ParenExpr = 10,
+  MulOperator = 11,
+  AddOperator = 12

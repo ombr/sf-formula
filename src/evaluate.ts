@@ -1,5 +1,5 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, String, Boolean, AddExpr, MulExpr, ParenExpr, Term, AddOperator, MulOperator } from "./parser.terms";
+import { Expression, Number, String, Boolean, AddExpr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable } from "./parser.terms";
 
 function evaluate(tree: Tree, input: string, context: Record<string, any> = {}): any {
   const cursor = tree.cursor();
@@ -100,7 +100,10 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
         return str.substring(1, str.length - 1);
       case Boolean:
         return text() === "true";
-        
+      case Variable:
+        const name = text();
+        if(!Object.hasOwn(context, name)) throw new Error('Variable does not exists');
+        return context[name];
       default:
         throw new Error(`Unknown node type: ${nodeType}`);
     }
