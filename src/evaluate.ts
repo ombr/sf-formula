@@ -1,5 +1,5 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function } from "./parser.terms";
+import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator } from "./parser.terms";
 
 function evaluate(tree: Tree, input: string, context: Record<string, any> = {}): any {
   const cursor = tree.cursor();
@@ -11,7 +11,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
     const text = function() {
       return input.slice(node.from, node.to);
     };
-    console.log('EVALUATE',text(), nodeType, context);
+    console.log('EVALUATE',text(), nodeType);
     
     const evaluateFirstChild = (): any => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
@@ -21,6 +21,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
     };
     const evaluateFunction = (): any => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
+      let value: unknown;
       const name = text();
       switch(name) {
         case 'ISBLANK':
@@ -28,21 +29,25 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
             cursor.parent();
             return true;
           }
-          const value = evaluateNode();
+          value = evaluateNode();
           cursor.parent();
           return value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
+        case 'NOT':
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            return true;
+          }
+          value = evaluateNode();
+          cursor.parent();
+          return value === true ? false : true;
         default:
           throw new Error(`Unknown function: ${name}`);
       }
     }
     const eachChild = (callback: (index: number) => void): void => {
-      console.log(" ======== eachChild");
       let index = 0;
       if(!cursor.firstChild()) return;
-      // console.log("eachChild", index, cursor.name);
-      // callback(index);
       do {
-        console.log("eachChild", index, cursor.name);
         callback(index);
         index+=1;
       } while (cursor.nextSibling())
@@ -56,6 +61,9 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
         return evaluateFirstChild();
       case Expr:
       case MulExpr:
+      case AddExpr:
+      case OrExpr:
+      case AndExpr:
         let value: unknown;
         let operator: number;
         eachChild((index)=> {
@@ -65,6 +73,13 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
           }
           if(index % 2 === 0) {
             switch(operator) {
+              case AndOperator:
+                console.log('AND', value, evaluateNode());
+                value = value && evaluateNode();
+                break;
+              case OrOperator:
+                value = value || evaluateNode();
+                break;
               case AddOperator:
                 value += evaluateNode();
                 break;
@@ -80,36 +95,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
           }
         });
         return value;
-        /*console.log('OPERATION ?');
-        let operator: Tree;
-        getChildren().forEach((child, index) => {
-          if(!(child instanceof Tree)) throw new Error('Child is not a tree');
-          if( index === 0 ) {
-            console.log('FIRST', child);
-            value = evaluate(child);
-            return;
-          } 
-          if(index % 2 === 0) {
-            operator = node;
-            return;
-          }
-          const right = evaluate(child);
-          if(!operator) throw new Error('Operator is not set');
-          switch(operator.type.id) {
-            case AddOperator:
-              value += right;
-              break;
-            case MulOperator:
-              value *= right;
-              break;
-            default:
-              throw new Error('Unknown operator');
-          }
-        });
-        console.log('Operations ?', node.children, value);
-        return value; */
       case Number:
-        console.log('NUMNER ?', text())
         return parseInt(text(), 10);
       case String:
         const str: string = text();

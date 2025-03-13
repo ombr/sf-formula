@@ -1,6 +1,9 @@
 @top Expression { Expr }
 
-Expr { MulExpr (AddOperator MulExpr)* }
+Expr { OrExpr }
+OrExpr { AndExpr (OrOperator AndExpr)* }
+AndExpr { AddExpr (AndOperator AddExpr)* }
+AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
 Term { Number | String | Boolean | Variable | ParenExpr | Function }
 ParenExpr { "(" Expr ")" }
@@ -16,6 +19,8 @@ Function { Identifier "(" (Expr ("," Expr)*)? ")" }
   Boolean { "true" | "false" }
   AddOperator { "+" | "-" | "&" }
   MulOperator { "*" }
+  AndOperator { "&&" }
+  OrOperator { "||" }
   Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
   @precedence {Boolean, Identifier}
 }

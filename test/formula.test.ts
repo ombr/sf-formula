@@ -27,6 +27,10 @@ describe('formula_eval', () => {
     testFormula('11 + 1', {}, 12, 'Number');
     testFormula('6 * 2', {}, 12, 'Number');
     testFormula('6 * 2 + 1', {}, 13, 'Number');
+    testFormula('true && true', {}, true, 'Boolean && true');
+    testFormula('true && false', {}, false, 'Boolean && false');
+    testFormula('true || false', {}, true, 'Boolean || true');
+    testFormula('false || false', {}, false, 'Boolean || false');
     // testFormula('', {}, undefined, 'undefined');
   });
 
@@ -44,6 +48,11 @@ describe('formula_eval', () => {
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
+  });
+
+  describe('Functions', () => {
+    testFormula('NOT(true)', {}, false, 'NOT true');
+    testFormula('NOT(false)', {}, true, 'NOT false');
     testFormula('ISBLANK(Email)',
       { Email: "TEST@EXAMPLE.COM" }, 
       false,
@@ -57,14 +66,18 @@ describe('formula_eval', () => {
       { Email: " " },
       true,
       'IS BLANK false');
-    /*testFormula('ISBLANK(Email) && ISBLANK(FirstName)',
+    testFormula('ISBLANK(Email) && ISBLANK(FirstName)',
       { Email: "john@doe.com", FirstName: "John" },
       false,
       'Multiple ISBLANK true');
-    testFormula('ISBLANK(Email) || ISBLANK(FirstName)',
+    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
       { Email: "", FirstName: "John" },
       false,
-      'Multiple ISBLANK false');*/
+      'Multiple NOT(ISBLANK) false');
+    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
+      { Email: "john@doe.fs", FirstName: "John" },
+      true,
+      'Multiple NOT(ISBLANK) false');
   });
 
  /*
