@@ -1,9 +1,9 @@
 import { Tree, TreeCursor } from "@lezer/common";
 import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
 
-function evaluate(tree: Tree, input: string, context: Record<string, any> = {}): any {
+function evaluate(tree: Tree, input: string, context: Record<string, unknown> = {}): unknown {
   const cursor = tree.cursor();
-  function evaluateNode(): any {
+  function evaluateNode(): unknown {
     const node = cursor;
     if(!(cursor instanceof TreeCursor)) throw new Error('Node is not a tree');
     const nodeType: number = node.type.id;
@@ -11,13 +11,13 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       return input.slice(node.from, node.to);
     };
     
-    const evaluateFirstChild = (): any => {
+    const evaluateFirstChild = (): unknown => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
       const value = evaluateNode();
       cursor.parent();
       return value;
     };
-    const evaluateFunction = (): any => {
+    const evaluateFunction = (): unknown => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
       let value: unknown;
       const name = text();
@@ -64,6 +64,11 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       } while (cursor.nextSibling())
       cursor.parent();
     };
+    let value: unknown, right: unknown;
+    let operator: {
+      id: number,
+      text: string,
+    };
 
     switch (nodeType) {
       case Expression:
@@ -76,11 +81,6 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       case OrExpr:
       case AndExpr:
       case CompExpr:
-        let value: unknown;
-        let operator: {
-          id: number,
-          text: string,
-        };
         eachChild((index)=> {
           if(index === 0) {
             value = evaluateNode();
@@ -93,19 +93,27 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
                 switch(operator.text) {
                   case '>=':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
-                    value = value >= evaluateNode();
+                    right = evaluateNode();
+                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    value = value >= right;
                     break;
                   case '<=':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
-                    value = value <= evaluateNode();
+                    right = evaluateNode();
+                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    value = value <= right;
                     break;
                   case '>':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
-                    value = value > evaluateNode();
+                    right = evaluateNode();
+                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    value = value > right;
                     break;
                   case '<':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
-                    value = value < evaluateNode();
+                    right = evaluateNode();
+                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    value = value < right;
                     break;
                   case '==':
                   case '=':
@@ -125,14 +133,22 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
                 value = value || evaluateNode();
                 break;
               case AddOperator:
+                right = evaluateNode();
                 switch(operator.text) {
                   case '&':
                   case '+':
-                    value += evaluateNode();
+                    if(typeof value === 'number' && typeof right === 'number') {
+                      value = value + right;
+                    } else if (typeof value === 'string' && typeof right === 'string') {
+                      value = value + right;
+                    } else {
+                      throw new Error('Incompatible types');
+                    }
                     break;
                   case '-':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
-                    value -= evaluateNode();
+                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    value -= right;
                     break;
                   default:
                     throw new Error('Unknown operator');
@@ -140,12 +156,14 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
                 break;
               case MulOperator:
                 if(typeof value !== 'number') throw new Error('Value is not a number');
+                right = evaluateNode();
+                if(typeof right !== 'number') throw new Error('Value is not a number');
                 switch(operator.text) {
                   case '*':
-                    value *= evaluateNode();
+                    value *= right;
                     break;
                   case '/':
-                    value = value / evaluateNode();
+                    value = value / right;
                     break;
                   default:
                     throw new Error('Unknown operator');
@@ -165,14 +183,16 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       case Number:
         return parseInt(text(), 10);
       case String:
-        const str: string = text();
-        return str.substring(1, str.length - 1);
+        value = text();
+        if(typeof value !== 'string') throw new Error('Value is not a string');
+        return value.substring(1, value.length - 1);
       case Boolean:
         return text() === "true";
       case Variable:
-        const name = text();
-        if(!Object.hasOwn(context, name)) throw new Error('Variable does not exists');
-        return context[name];
+        value = text();
+        if(typeof value !== 'string') throw new Error('Value is not a string');
+        if(!Object.hasOwn(context, value)) throw new Error('Variable does not exists');
+        return context[value];
       case Function:
         return evaluateFunction();
       default:
