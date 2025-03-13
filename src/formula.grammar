@@ -1,0 +1,18 @@
+@top Expression { AddExpr }
+
+AddExpr { MulExpr (AddOperator MulExpr)* }
+MulExpr { Term (MulOperator Term)* }
+Term { Number | String | Boolean | ParenExpr }
+ParenExpr { "(" AddExpr ")" }
+
+@skip { space }
+
+@tokens {
+  space { @whitespace+ }
+  Number { $[0-9]+ }
+  String { '"' !["]* '"' }
+  Boolean { "true" | "false" }
+  AddOperator { "+" | "-" | "&" }
+  MulOperator { "*" }
+}
+
