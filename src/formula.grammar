@@ -1,0 +1,29 @@
+@top Expression { Expr }
+
+Expr { OrExpr }
+OrExpr { AndExpr (OrOperator AndExpr)* }
+AndExpr { CompExpr (AndOperator CompExpr)* }
+CompExpr { AddExpr (CompOperator AddExpr)* }
+AddExpr { MulExpr (AddOperator MulExpr)* }
+MulExpr { Term (MulOperator Term)* }
+Term { Number | String | Boolean | Variable | ParenExpr | Function }
+ParenExpr { "(" Expr ")" }
+Variable { Identifier }
+Function { Identifier "(" (Expr ("," Expr)*)? ")" }
+
+@skip { space }
+
+@tokens {
+  space { @whitespace+ }
+  Number { $[0-9]+ }
+  String { '"' !["]* '"' }
+  Boolean { "true" | "false" }
+  AddOperator { "+" | "-" | "&" }
+  MulOperator { "*" | "/" }
+  CompOperator { "<" | ">" | "==" | ">=" | "<=" | "!=" | "<>" | "=" }
+  AndOperator { "&&" | "AND" }
+  OrOperator { "||" | "OR" }
+  Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
+  @precedence {Boolean, Identifier}
+}
+

@@ -4,4 +4,5 @@ coverage/
 .DS_Store
 *.log
 docs/
-src/parser.ts 
+src/parser.ts
+src/parser.terms.ts
