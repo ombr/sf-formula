@@ -196,6 +196,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
       case Function:
         return evaluateFunction();
       default:
+        if(nodeType === 0) return undefined;
         throw new Error(`Unknown node type: ${nodeType}`);
     }
   }

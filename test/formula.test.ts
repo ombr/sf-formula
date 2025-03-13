@@ -22,13 +22,13 @@ describe('formula_eval', () => {
   describe('Basics', () => {
     testFormula('"Hello"', {}, 'Hello', 'String');
     testFormula('12', {}, 12, 'Number');
-    testFormula('true', {}, true, 'Number');
-    testFormula('false', {}, false, 'Number');
-    testFormula('11 + 1', {}, 12, 'Number');
-    testFormula('13 - 1', {}, 12, 'Number');
-    testFormula('6 * 2', {}, 12, 'Number');
-    testFormula('6 * 2 + 1', {}, 13, 'Number');
-    testFormula('24 / 2', {}, 12, 'Number');
+    testFormula('true', {}, true, 'Boolean true');
+    testFormula('false', {}, false, 'Boolean false');
+    testFormula('11 + 1', {}, 12, 'Addition');
+    testFormula('13 - 1', {}, 12, 'Subtraction');
+    testFormula('6 * 2', {}, 12, 'Multiplication');
+    testFormula('6 * 2 + 1', {}, 13, 'Addition and Multiplication');
+    testFormula('24 / 2', {}, 12, 'Division');
     testFormula('true && true', {}, true, 'Boolean && true');
     testFormula('true && false', {}, false, 'Boolean && false');
     testFormula('true || false', {}, true, 'Boolean || true');
@@ -45,7 +45,8 @@ describe('formula_eval', () => {
     testFormula('12 >= 14', {}, false, '>= false');
     testFormula('12 <= 12', {}, true, '<= true');
     testFormula('12 <= 14', {}, true, '<= true');
-    // testFormula('', {}, undefined, 'undefined');
+    testFormula('', {}, undefined, 'undefined');
+    testFormula(' ', {}, undefined, 'undefined');
   });
 
   describe('Whitespaces', () => {

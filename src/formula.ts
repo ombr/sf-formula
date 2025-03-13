@@ -7,7 +7,6 @@ export class FormulaError extends Error {};
 
 export function formulaEval(formula: string, context: Context): unknown {
   if (typeof formula !== 'string') throw new FormulaError('Formula should be a string');
-  if (formula === '') throw new FormulaError('Formula text cannot be null or empty');
   const res = parser.parse(formula);
   // console.log('PARSED', res, context);
   return evaluate(res, formula, context);
