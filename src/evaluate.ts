@@ -1,17 +1,15 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator } from "./parser.terms";
+import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
 
 function evaluate(tree: Tree, input: string, context: Record<string, any> = {}): any {
   const cursor = tree.cursor();
   function evaluateNode(): any {
     const node = cursor;
     if(!(cursor instanceof TreeCursor)) throw new Error('Node is not a tree');
-    // Get the node type id
     const nodeType: number = node.type.id;
     const text = function() {
       return input.slice(node.from, node.to);
     };
-    console.log('EVALUATE',text(), nodeType);
     
     const evaluateFirstChild = (): any => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
@@ -40,6 +38,19 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
           value = evaluateNode();
           cursor.parent();
           return value === true ? false : true;
+        case 'IF':
+          if(!cursor.nextSibling()) throw new Error('IF function has no arguments');
+          value = evaluateNode();
+          if(value === true) {
+            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument');
+            value = evaluateNode();
+          } else {
+            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument');
+            if(!cursor.nextSibling()) throw new Error('IF function is missing false argument');
+            value = evaluateNode();
+          }
+          cursor.parent();
+          return value;
         default:
           throw new Error(`Unknown function: ${name}`);
       }
@@ -64,34 +75,90 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       case AddExpr:
       case OrExpr:
       case AndExpr:
+      case CompExpr:
         let value: unknown;
-        let operator: number;
+        let operator: {
+          id: number,
+          text: string,
+        };
         eachChild((index)=> {
           if(index === 0) {
             value = evaluateNode();
             return;
           }
           if(index % 2 === 0) {
-            switch(operator) {
+            switch(operator.id) {
+              case CompOperator:
+
+                switch(operator.text) {
+                  case '>=':
+                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    value = value >= evaluateNode();
+                    break;
+                  case '<=':
+                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    value = value <= evaluateNode();
+                    break;
+                  case '>':
+                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    value = value > evaluateNode();
+                    break;
+                  case '<':
+                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    value = value < evaluateNode();
+                    break;
+                  case '==':
+                  case '=':
+                    value = value === evaluateNode();
+                    break;
+                  case '!=':
+                    value = value !== evaluateNode();
+                    break;
+                  default:
+                    throw new Error('Unknown operator');
+                }
+                break;
               case AndOperator:
-                console.log('AND', value, evaluateNode());
                 value = value && evaluateNode();
                 break;
               case OrOperator:
                 value = value || evaluateNode();
                 break;
               case AddOperator:
-                value += evaluateNode();
+                switch(operator.text) {
+                  case '&':
+                  case '+':
+                    value += evaluateNode();
+                    break;
+                  case '-':
+                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    value -= evaluateNode();
+                    break;
+                  default:
+                    throw new Error('Unknown operator');
+                }
                 break;
               case MulOperator:
                 if(typeof value !== 'number') throw new Error('Value is not a number');
-                value *= evaluateNode();
+                switch(operator.text) {
+                  case '*':
+                    value *= evaluateNode();
+                    break;
+                  case '/':
+                    value = value / evaluateNode();
+                    break;
+                  default:
+                    throw new Error('Unknown operator');
+                }
                 break;
               default:
                 throw new Error('Unknown operator');
             }
           } else {
-            operator = cursor.type.id;
+            operator = {
+              id: cursor.type.id,
+              text: text(),
+            }
           }
         });
         return value;

@@ -2,7 +2,8 @@
 
 Expr { OrExpr }
 OrExpr { AndExpr (OrOperator AndExpr)* }
-AndExpr { AddExpr (AndOperator AddExpr)* }
+AndExpr { CompExpr (AndOperator CompExpr)* }
+CompExpr { AddExpr (CompOperator AddExpr)* }
 AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
 Term { Number | String | Boolean | Variable | ParenExpr | Function }
@@ -18,9 +19,10 @@ Function { Identifier "(" (Expr ("," Expr)*)? ")" }
   String { '"' !["]* '"' }
   Boolean { "true" | "false" }
   AddOperator { "+" | "-" | "&" }
-  MulOperator { "*" }
-  AndOperator { "&&" }
-  OrOperator { "||" }
+  MulOperator { "*" | "/" }
+  CompOperator { "<" | ">" | "==" | ">=" | "<=" | "!=" | "<>" | "=" }
+  AndOperator { "&&" | "AND" }
+  OrOperator { "||" | "OR" }
   Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
   @precedence {Boolean, Identifier}
 }

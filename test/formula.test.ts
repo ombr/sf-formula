@@ -25,12 +25,26 @@ describe('formula_eval', () => {
     testFormula('true', {}, true, 'Number');
     testFormula('false', {}, false, 'Number');
     testFormula('11 + 1', {}, 12, 'Number');
+    testFormula('13 - 1', {}, 12, 'Number');
     testFormula('6 * 2', {}, 12, 'Number');
     testFormula('6 * 2 + 1', {}, 13, 'Number');
+    testFormula('24 / 2', {}, 12, 'Number');
     testFormula('true && true', {}, true, 'Boolean && true');
     testFormula('true && false', {}, false, 'Boolean && false');
     testFormula('true || false', {}, true, 'Boolean || true');
     testFormula('false || false', {}, false, 'Boolean || false');
+    testFormula('12 > 10', {}, true, '> true');
+    testFormula('12 > 14', {}, false, '> false');
+    testFormula('12 < 14', {}, true, '< true');
+    testFormula('12 < 10', {}, false, '< false');
+    testFormula('12 == 12', {}, true, '== true');
+    testFormula('12 == 14', {}, false, '== false');
+    testFormula('12 != 14', {}, true, '!= true');
+    testFormula('12 != 12', {}, false, '!= false');
+    testFormula('12 >= 12', {}, true, '>= true');
+    testFormula('12 >= 14', {}, false, '>= false');
+    testFormula('12 <= 12', {}, true, '<= true');
+    testFormula('12 <= 14', {}, true, '<= true');
     // testFormula('', {}, undefined, 'undefined');
   });
 
@@ -48,7 +62,7 @@ describe('formula_eval', () => {
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
-  });
+  });//*/
 
   describe('Functions', () => {
     testFormula('NOT(true)', {}, false, 'NOT true');
@@ -80,7 +94,6 @@ describe('formula_eval', () => {
       'Multiple NOT(ISBLANK) false');
   });
 
- /*
   // Numeric Operations
   describe('Numeric Formulas', () => {
     testFormula('Amount', { Amount: 100 }, 100, 'numeric field reference');
@@ -88,14 +101,14 @@ describe('formula_eval', () => {
       { Amount: 10, Quantity: 5 }, 
       50, 
       'numeric multiplication');
-    testFormula('ROUND(Amount, 2)', 
+    /*testFormula('ROUND(Amount, 2)',
       { Amount: 100.456 }, 
       100.46, 
       'rounding numbers');
     testFormula('ABS(Balance)', 
       { Balance: -50 }, 
       50, 
-      'absolute value');
+      'absolute value');*/
   });
 
 
@@ -155,7 +168,7 @@ describe('formula_eval', () => {
       5, 
       'days between dates');
   });
-  * /
+  */
 
   // Conditional Logic
   describe('Conditional Formulas', () => {
@@ -166,11 +179,12 @@ describe('formula_eval', () => {
     /*testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)',
       { Status: "In Progress" }, 
       2, 
-      'case statement');* /
+      'case statement');*/
   });
 
 
   // Error Cases
+  /*
   describe('Error Handling', () => {
     /*testFormulaError(
       '',
