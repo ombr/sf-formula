@@ -1,10 +1,11 @@
-@top Expression { AddExpr }
+@top Expression { Expr }
 
-AddExpr { MulExpr (AddOperator MulExpr)* }
+Expr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
-Term { Number | String | Boolean | Variable | ParenExpr }
-ParenExpr { "(" AddExpr ")" }
+Term { Number | String | Boolean | Variable | ParenExpr | Function }
+ParenExpr { "(" Expr ")" }
 Variable { Identifier }
+Function { Identifier "(" (Expr ("," Expr)*)? ")" }
 
 @skip { space }
 

@@ -44,10 +44,27 @@ describe('formula_eval', () => {
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
-    /*testFormula('LOWER(Email)',
+    testFormula('ISBLANK(Email)',
       { Email: "TEST@EXAMPLE.COM" }, 
-      'test@example.com', 
-      'text case conversion');*/
+      false,
+      'IS BLANK false');
+    testFormula('ISBLANK(Email)',
+      { Email: "" },
+      true,
+      'IS BLANK false');
+    testFormula('ISBLANK()', {}, true, 'IS BLANK with no argument return true');
+    testFormula('ISBLANK(Email)',
+      { Email: " " },
+      true,
+      'IS BLANK false');
+    /*testFormula('ISBLANK(Email) && ISBLANK(FirstName)',
+      { Email: "john@doe.com", FirstName: "John" },
+      false,
+      'Multiple ISBLANK true');
+    testFormula('ISBLANK(Email) || ISBLANK(FirstName)',
+      { Email: "", FirstName: "John" },
+      false,
+      'Multiple ISBLANK false');*/
   });
 
  /*

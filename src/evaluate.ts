@@ -1,5 +1,5 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, String, Boolean, AddExpr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable } from "./parser.terms";
+import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function } from "./parser.terms";
 
 function evaluate(tree: Tree, input: string, context: Record<string, any> = {}): any {
   const cursor = tree.cursor();
@@ -19,6 +19,22 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       cursor.parent();
       return value;
     };
+    const evaluateFunction = (): any => {
+      if(!cursor.firstChild()) throw new Error('Expression has no children');
+      const name = text();
+      switch(name) {
+        case 'ISBLANK':
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            return true;
+          }
+          const value = evaluateNode();
+          cursor.parent();
+          return value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
+        default:
+          throw new Error(`Unknown function: ${name}`);
+      }
+    }
     const eachChild = (callback: (index: number) => void): void => {
       console.log(" ======== eachChild");
       let index = 0;
@@ -38,7 +54,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
       case Term:
       case ParenExpr:
         return evaluateFirstChild();
-      case AddExpr:
+      case Expr:
       case MulExpr:
         let value: unknown;
         let operator: number;
@@ -104,6 +120,8 @@ function evaluate(tree: Tree, input: string, context: Record<string, any> = {}):
         const name = text();
         if(!Object.hasOwn(context, name)) throw new Error('Variable does not exists');
         return context[name];
+      case Function:
+        return evaluateFunction();
       default:
         throw new Error(`Unknown node type: ${nodeType}`);
     }
