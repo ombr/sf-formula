@@ -1,4 +1,4 @@
-@top Expression { Expr }
+@top Expression { Expr end }
 
 Expr { OrExpr }
 OrExpr { AndExpr (OrOperator AndExpr)* }
@@ -26,5 +26,6 @@ Function { Identifier "(" (Expr ("," Expr)*)? ")" }
   OrOperator { "||" | "OR" }
   Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
   @precedence {Boolean, Identifier}
+  end { @eof }
 }
 

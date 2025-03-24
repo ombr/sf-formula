@@ -11,12 +11,12 @@ describe('formula_eval', () => {
     });*/
   }
 
-  /*function testFormulaError(formula: string, context: Context, expectedError: string, description: string) {
+  function testFormulaError(formula: string, context: Context, expectedError: string, description: string) {
     it(description, () => {
-      expect(() => formula_eval(formula, context))
+      expect(() => formulaEval(formula, context))
         .toThrow(expectedError);
     });
-  }*/
+  }
 
   // Some basic usecases
   describe('Basics', () => {
@@ -47,6 +47,9 @@ describe('formula_eval', () => {
     testFormula('12 <= 14', {}, true, '<= true');
     testFormula('', {}, undefined, 'undefined');
     testFormula(' ', {}, undefined, 'undefined');
+    testFormula('12 * 2', {}, 24, 'Multiplication');
+    testFormula('12 - 2', {}, 10, 'Substraction');
+    testFormulaError('12 12', {}, 'Unknown operator', 'Missing operator');
   });
 
   describe('Whitespaces', () => {
