@@ -1,5 +1,5 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, String, Boolean, Expr, MulExpr, ParenExpr, Term, AddOperator, MulOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
+import { Expression, Number, MulExpr, String, Boolean, Expr, MulOperator, ParenExpr, Term, AddOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
 
 function evaluate(tree: Tree, input: string, context: Record<string, unknown> = {}): unknown {
   const cursor = tree.cursor();
@@ -17,6 +17,19 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
       cursor.parent();
       return value;
     };
+    const evaluateVariable = (context: Record<string, unknown>): unknown => {
+      if(!cursor.firstChild()) throw new Error('Variable has no children');
+      let fieldName = text();
+      let value: unknown = context[fieldName];
+      if(value === undefined) throw new Error('Variable does not exists');
+      while(cursor.nextSibling()) {
+        fieldName = text();
+        if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) throw new Error('Variable does not exists');
+        value = (value as Record<string, unknown>)[fieldName];
+      }
+      cursor.parent();
+      return value;
+    }
     const evaluateFunction = (): unknown => {
       if(!cursor.firstChild()) throw new Error('Expression has no children');
       let value: unknown;
@@ -64,6 +77,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
       } while (cursor.nextSibling())
       cursor.parent();
     };
+
     let value: unknown, right: unknown;
     let operator: {
       id: number,
@@ -89,7 +103,6 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
           if(index % 2 === 0) {
             switch(operator.id) {
               case CompOperator:
-
                 switch(operator.text) {
                   case '>=':
                     if(typeof value !== 'number') throw new Error('Value is not a number');
@@ -173,6 +186,8 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
                 throw new Error('Unknown operator');
             }
           } else {
+            const Operators = [OrOperator, AndOperator, MulOperator, AddOperator, CompOperator];
+            if(!(Operators.includes(cursor.type.id))) throw new Error(`Unknown operator ${cursor.type.name} ${text()}`);
             operator = {
               id: cursor.type.id,
               text: text(),
@@ -189,10 +204,7 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
       case Boolean:
         return text() === "true";
       case Variable:
-        value = text();
-        if(typeof value !== 'string') throw new Error('Value is not a string');
-        if(!Object.hasOwn(context, value)) throw new Error('Variable does not exists');
-        return context[value];
+        return evaluateVariable(context);
       case Function:
         return evaluateFunction();
       default:
