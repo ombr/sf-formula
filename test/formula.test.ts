@@ -59,6 +59,8 @@ describe('formula_eval', () => {
   // Text Operations
   describe('Variables', () => {
     testFormula('FirstName', { FirstName: "John" }, 'John', 'text field reference');
+    testFormula('FirstName.value', { FirstName: { value: "John" } }, 'John', 'object field reference');
+    testFormula('a.b.c', { a: { b: { c: "Super" } } }, 'Super', 'object field reference');
     testFormula('FirstName & " " & LastName',
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 

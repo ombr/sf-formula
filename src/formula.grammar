@@ -8,7 +8,8 @@ AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
 Term { Number | String | Boolean | Variable | ParenExpr | Function }
 ParenExpr { "(" Expr ")" }
-Variable { Identifier }
+Variable { VariableField ("." VariableField)* }
+VariableField { Identifier }
 Function { Identifier "(" (Expr ("," Expr)*)? ")" }
 
 @skip { space }
