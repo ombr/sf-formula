@@ -2,7 +2,7 @@ import { evaluate } from "./evaluate";
 import { parser } from "./parser";
 export { parser };
 
-export type Context = Record<string, unknown>;
+export type Context = Record<string, unknown> | ((variables: string[]) => unknown);
 export class FormulaError extends Error {};
 
 export function formulaEval(formula: string, context: Context): unknown {

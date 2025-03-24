@@ -1,3 +1,4 @@
+import { assert } from 'console';
 import { Context, formulaEval } from '../src/formula';
 
 describe('formula_eval', () => {
@@ -189,6 +190,20 @@ describe('formula_eval', () => {
   });
 
 
+  describe('Dynamic context', () => {
+    testFormula('Amount', (variables: string[])=> {
+      assert(variables.length === 1);
+      assert(variables[0] === 'Amount');
+      return 100
+    }, 100, 'numeric field reference');
+    testFormula('Amount * Quantity', (variables: string[])=> {
+      assert(variables.length === 2);
+      assert(variables[0] === 'Amount');
+      assert(variables[1] === 'Quantity');
+      if(variables[0] === 'Amount') return 100;
+      return 2;
+    }, 200, 'numeric field reference');
+  });
   // Error Cases
   /*
   describe('Error Handling', () => {

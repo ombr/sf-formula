@@ -1,7 +1,8 @@
 import { Tree, TreeCursor } from "@lezer/common";
 import { Expression, Number, MulExpr, String, Boolean, Expr, MulOperator, ParenExpr, Term, AddOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
+import { Context } from "./formula";
 
-function evaluate(tree: Tree, input: string, context: Record<string, unknown> = {}): unknown {
+function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
   const cursor = tree.cursor();
   function evaluateNode(): unknown {
     const node = cursor;
@@ -17,9 +18,16 @@ function evaluate(tree: Tree, input: string, context: Record<string, unknown> = 
       cursor.parent();
       return value;
     };
-    const evaluateVariable = (context: Record<string, unknown>): unknown => {
+    const evaluateVariable = (context: Context): unknown => {
       if(!cursor.firstChild()) throw new Error('Variable has no children');
       let fieldName = text();
+      if(typeof context === 'function') {
+        let variables = [fieldName];
+        while(cursor.nextSibling()) {
+          variables.push(text());
+        }
+        return context(variables);
+      }
       let value: unknown = context[fieldName];
       if(value === undefined) throw new Error('Variable does not exists');
       while(cursor.nextSibling()) {
