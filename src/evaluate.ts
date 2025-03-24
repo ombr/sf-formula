@@ -22,7 +22,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
       if(!cursor.firstChild()) throw new Error('Variable has no children');
       let fieldName = text();
       if(typeof context === 'function') {
-        let variables = [fieldName];
+        const variables = [fieldName];
         while(cursor.nextSibling()) {
           variables.push(text());
         }
