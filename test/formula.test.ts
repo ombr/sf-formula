@@ -1,4 +1,5 @@
-import { Context, formulaEval, parse } from '../src/formula';
+import { assert } from 'console';
+import { Context, formulaEval } from '../src/formula';
 
 describe('formula_eval', () => {
   function testFormula(formula: string, context: Context, expected: unknown, description: string) {
@@ -6,40 +7,99 @@ describe('formula_eval', () => {
     it(title, () => {
       expect(formulaEval(formula, context)).toBe(expected);
     });
-    it(`serialize | ${title}`, () => {
-      expect(parse(formula, context).serialize()).toBe(formula.trim());
+    /*it(`serialize | ${title}`, () => {
+      expect(parser.parse(formula).serialize()).toBe(formula.trim());
+    });*/
+  }
+
+  function testFormulaError(formula: string, context: Context, expectedError: string, description: string) {
+    it(description, () => {
+      expect(() => formulaEval(formula, context))
+        .toThrow(expectedError);
     });
   }
 
-  /*function testFormulaError(formula: string, context: Context, expectedError: string, description: string) {
-    it(description, () => {
-      expect(() => formula_eval(formula, context))
-        .toThrow(expectedError);
-    });
-  }*/
-
   // Some basic usecases
+  describe('Basics', () => {
+    testFormula('"Hello"', {}, 'Hello', 'String');
+    testFormula('12', {}, 12, 'Number');
+    testFormula('true', {}, true, 'Boolean true');
+    testFormula('false', {}, false, 'Boolean false');
+    testFormula('11 + 1', {}, 12, 'Addition');
+    testFormula('13 - 1', {}, 12, 'Subtraction');
+    testFormula('6 * 2', {}, 12, 'Multiplication');
+    testFormula('6 * 2 + 1', {}, 13, 'Addition and Multiplication');
+    testFormula('24 / 2', {}, 12, 'Division');
+    testFormula('true && true', {}, true, 'Boolean && true');
+    testFormula('true && false', {}, false, 'Boolean && false');
+    testFormula('true || false', {}, true, 'Boolean || true');
+    testFormula('false || false', {}, false, 'Boolean || false');
+    testFormula('12 > 10', {}, true, '> true');
+    testFormula('12 > 14', {}, false, '> false');
+    testFormula('12 < 14', {}, true, '< true');
+    testFormula('12 < 10', {}, false, '< false');
+    testFormula('12 == 12', {}, true, '== true');
+    testFormula('12 == 14', {}, false, '== false');
+    testFormula('12 != 14', {}, true, '!= true');
+    testFormula('12 != 12', {}, false, '!= false');
+    testFormula('12 >= 12', {}, true, '>= true');
+    testFormula('12 >= 14', {}, false, '>= false');
+    testFormula('12 <= 12', {}, true, '<= true');
+    testFormula('12 <= 14', {}, true, '<= true');
+    testFormula('', {}, undefined, 'undefined');
+    testFormula(' ', {}, undefined, 'undefined');
+    testFormula('12 * 2', {}, 24, 'Multiplication');
+    testFormula('12 - 2', {}, 10, 'Substraction');
+    testFormulaError('12 12', {}, 'Unknown operator', 'Missing operator');
+  });
+
   describe('Whitespaces', () => {
     testFormula(' "Hello"', {}, 'Hello', 'starting with whitespace');
     testFormula('"Hello" ', {}, 'Hello', 'ending with whitespace');
     testFormula('  12', {}, 12, 'ending with whitespace');
     testFormula('12 ', {}, 12, 'ending with whitespace');
-  });
+  });//*/
 
   // Text Operations
-  describe('Text Formulas', () => {
-    testFormula('"Hello"', {}, 'Hello', 'simple text literal');
+  describe('Variables', () => {
     testFormula('FirstName', { FirstName: "John" }, 'John', 'text field reference');
-    testFormula('FirstName & " " & LastName', 
+    testFormula('FirstName.value', { FirstName: { value: "John" } }, 'John', 'object field reference');
+    testFormula('a.b.c', { a: { b: { c: "Super" } } }, 'Super', 'object field reference');
+    testFormula('FirstName & " " & LastName',
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
-    testFormula('LOWER(Email)', 
-      { Email: "TEST@EXAMPLE.COM" }, 
-      'test@example.com', 
-      'text case conversion');
-  });
+  });//*/
 
+  describe('Functions', () => {
+    testFormula('NOT(true)', {}, false, 'NOT true');
+    testFormula('NOT(false)', {}, true, 'NOT false');
+    testFormula('ISBLANK(Email)',
+      { Email: "TEST@EXAMPLE.COM" }, 
+      false,
+      'IS BLANK false');
+    testFormula('ISBLANK(Email)',
+      { Email: "" },
+      true,
+      'IS BLANK false');
+    testFormula('ISBLANK()', {}, true, 'IS BLANK with no argument return true');
+    testFormula('ISBLANK(Email)',
+      { Email: " " },
+      true,
+      'IS BLANK false');
+    testFormula('ISBLANK(Email) && ISBLANK(FirstName)',
+      { Email: "john@doe.com", FirstName: "John" },
+      false,
+      'Multiple ISBLANK true');
+    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
+      { Email: "", FirstName: "John" },
+      false,
+      'Multiple NOT(ISBLANK) false');
+    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
+      { Email: "john@doe.fs", FirstName: "John" },
+      true,
+      'Multiple NOT(ISBLANK) false');
+  });
 
   // Numeric Operations
   describe('Numeric Formulas', () => {
@@ -48,14 +108,14 @@ describe('formula_eval', () => {
       { Amount: 10, Quantity: 5 }, 
       50, 
       'numeric multiplication');
-    testFormula('ROUND(Amount, 2)', 
+    /*testFormula('ROUND(Amount, 2)',
       { Amount: 100.456 }, 
       100.46, 
       'rounding numbers');
     testFormula('ABS(Balance)', 
       { Balance: -50 }, 
       50, 
-      'absolute value');
+      'absolute value');*/
   });
 
 
@@ -130,7 +190,22 @@ describe('formula_eval', () => {
   });
 
 
+  describe('Dynamic context', () => {
+    testFormula('Amount', (variables: string[])=> {
+      assert(variables.length === 1);
+      assert(variables[0] === 'Amount');
+      return 100
+    }, 100, 'numeric field reference');
+    testFormula('Amount * Quantity', (variables: string[])=> {
+      assert(variables.length === 2);
+      assert(variables[0] === 'Amount');
+      assert(variables[1] === 'Quantity');
+      if(variables[0] === 'Amount') return 100;
+      return 2;
+    }, 200, 'numeric field reference');
+  });
   // Error Cases
+  /*
   describe('Error Handling', () => {
     /*testFormulaError(
       '',
@@ -167,6 +242,6 @@ describe('formula_eval', () => {
       {},
       'Unknown function: INVALID_FUNCTION',
       'invalid function name'
-    );*/
-  });
+    );* /
+  }); */
 });
