@@ -183,12 +183,48 @@ describe('formula_eval', () => {
       { Amount: 1500 }, 
       "High", 
       'simple if condition');
-    /*testFormula('CASE(Status, "New", 1, "In Progress", 2, "Completed", 3, 0)',
-      { Status: "In Progress" }, 
-      2, 
-      'case statement');*/
+    testFormula('IF(Amount > 1000, "High", "Low")',
+      { Amount: 2 },
+      "Low",
+      'simple if condition');
+    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+      { name: "J" },
+      "Missing 2 Chars",
+      'simple if condition');
+    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+      { name: "Jo" },
+      "Missing 1 Chars",
+      'simple if condition');
+    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+      { name: "John" },
+      true,
+      'simple if condition');
+    testFormula('IF(true, firstname, lastname)',
+      (variable)=> {
+        if(variable.join('.') !== "firstname") {
+          throw new Error("Oups trying to evaluate another variable than firstname");
+        }
+        return "John";
+      },
+      "John",
+      'test if true argument is evaluated');
+    testFormula('IF(false, firstname, lastname)',
+      (variable)=> {
+        if(variable.join('.') !== "lastname") {
+          throw new Error("Oups trying to evaluate another variable than lastname");
+        }
+        return "Else";
+      },
+      "Else",
+      'test if false argument is evaluated');
   });
 
+
+  describe('functions', () => {
+    testFormula('LENGTH("Hello")', {}, 5, 'LENGTH function');
+    testFormula('LENGTH("")', {}, 0, 'LENGTH function');
+    testFormulaError('LENGTH(123)', {}, 'LENGTH function argument is not a string: LENGTH(123)', 'LENGTH function');
+  });
 
   describe('Dynamic context', () => {
     testFormula('Amount', (variables: string[])=> {

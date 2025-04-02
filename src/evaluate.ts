@@ -59,19 +59,33 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
           value = evaluateNode();
           cursor.parent();
           return value === true ? false : true;
+        case 'LENGTH':
+          if(!cursor.nextSibling()) throw new Error('LENGTH function has no arguments' + text());
+          value = evaluateNode();
+          cursor.parent();
+          if(typeof value !== 'string') throw new Error('LENGTH function argument is not a string: ' + text());
+          return value.length;
+        case 'TEXT':
+          if(!cursor.nextSibling()) throw new Error('TEXT function has no arguments');
+          value = evaluateNode();
+          cursor.parent();
+          if(typeof value !== 'number') throw new Error('TEXT function argument is not a number: ' + text());
+          return value.toString();
         case 'IF':
-          if(!cursor.nextSibling()) throw new Error('IF function has no arguments');
+          if(!cursor.nextSibling()) throw new Error('IF function has no arguments' + text());
           value = evaluateNode();
           if(value === true) {
-            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument');
+            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument' + text());
             value = evaluateNode();
+            cursor.parent();
+            return value;
           } else {
             if(!cursor.nextSibling()) throw new Error('IF function is missing true argument');
             if(!cursor.nextSibling()) throw new Error('IF function is missing false argument');
             value = evaluateNode();
+            cursor.parent();
+            return value;
           }
-          cursor.parent();
-          return value;
         default:
           throw new Error(`Unknown function: ${name}`);
       }
@@ -163,7 +177,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
                     } else if (typeof value === 'string' && typeof right === 'string') {
                       value = value + right;
                     } else {
-                      throw new Error('Incompatible types');
+                      throw new Error('Incompatible types' + text());
                     }
                     break;
                   case '-':
