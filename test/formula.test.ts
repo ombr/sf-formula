@@ -199,6 +199,14 @@ describe('formula_eval', () => {
       { name: "John" },
       true,
       'simple if condition');
+    testFormula('IF(LENGTH(name.value) < 3, "Missing " + TEXT(3 - LENGTH(name.value)) + " chars" , "")',
+      { name: { value: "Jo" } },
+      "Missing 1 chars",
+      'simple if condition');
+    testFormula('IF(LENGTH(name.value) < 3, "Missing " + TEXT(3 - LENGTH(name.value)) + " chars" , "")',
+      { name: { value: "John" } },
+      "",
+      'simple if condition');
     testFormula('IF(true, firstname, lastname)',
       (variable)=> {
         if(variable.join('.') !== "firstname") {
