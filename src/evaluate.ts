@@ -26,6 +26,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
         while(cursor.nextSibling()) {
           variables.push(text());
         }
+        cursor.parent();
         return context(variables);
       }
       let value: unknown = context[fieldName];
@@ -52,10 +53,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
           cursor.parent();
           return value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
         case 'NOT':
-          if(!cursor.nextSibling()) {
-            cursor.parent();
-            return true;
-          }
+          if(!cursor.nextSibling()) throw new Error('NOT function has no arguments' + text());
           value = evaluateNode();
           cursor.parent();
           return value === true ? false : true;
