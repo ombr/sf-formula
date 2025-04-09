@@ -252,6 +252,19 @@ describe('formula_eval', () => {
     testFormula('CEILING(-5.2)', {}, -5, 'CEILING function with negative number');
     testFormula('CEILING(5)', {}, 5, 'CEILING function with integer');
     testFormulaError('CEILING("abc")', {}, 'CEILING function argument is not a number: CEILING("abc")', 'CEILING function with non-number');
+
+    testFormula('BLANKVALUE("", "Default")', {}, "Default", 'BLANKVALUE with empty string');
+    testFormula('BLANKVALUE(null, "Default")', {}, "Default", 'BLANKVALUE with null');
+    testFormula('BLANKVALUE(undefined, "Default")', {}, "Default", 'BLANKVALUE with undefined');
+    testFormula('BLANKVALUE(" ", "Default")', {}, "Default", 'BLANKVALUE with whitespace');
+    testFormula('BLANKVALUE("Hello", "Default")', {}, "Hello", 'BLANKVALUE with non-blank string');
+    testFormula('BLANKVALUE(123, "Default")', {}, 123, 'BLANKVALUE with number');
+    testFormula('BLANKVALUE(0, "Default")', {}, 0, 'BLANKVALUE with zero');
+    testFormula('BLANKVALUE(false, "Default")', {}, false, 'BLANKVALUE with false');
+    testFormula('BLANKVALUE(Name, "Unknown")', { Name: "" }, "Unknown", 'BLANKVALUE with blank variable');
+    testFormula('BLANKVALUE(Name, "Unknown")', { Name: "John" }, "John", 'BLANKVALUE with non-blank variable');
+    testFormulaError('BLANKVALUE()', {}, 'BLANKVALUE function requires 2 arguments: BLANKVALUE()', 'BLANKVALUE with no arguments');
+    testFormulaError('BLANKVALUE("test")', {}, 'BLANKVALUE function requires 2 arguments: BLANKVALUE("test")', 'BLANKVALUE with 1 argument');
   });
 
   describe('Dynamic context', () => {

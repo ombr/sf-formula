@@ -20,28 +20,29 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
     };
     const evaluateVariable = (context: Context): unknown => {
       if(!cursor.firstChild()) throw new Error('Variable has no children' + text());
-      let fieldName = text();
-      if(typeof context === 'function') {
-        const variables = [fieldName];
-        while(cursor.nextSibling()) {
-          variables.push(text());
-        }
-        cursor.parent();
-        return context(variables);
-      }
-      let value: unknown = context[fieldName];
-      if(value === undefined) throw new Error('Variable does not exists' + text());
+      const fieldName = text();
+      const variables = [fieldName];
       while(cursor.nextSibling()) {
-        fieldName = text();
-        if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) throw new Error('Variable does not exists' + text());
-        value = (value as Record<string, unknown>)[fieldName];
+        variables.push(text());
       }
       cursor.parent();
-      return value;
+      if(variables.length === 1 && variables[0] === 'null') return null;
+      if(variables.length === 1 && variables[0] === 'undefined') return undefined;
+      if(typeof context === 'function') {
+        return context(variables);
+      } else {
+        let value:unknown = context;
+        for(const fieldName of variables) {
+          if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) throw new Error('Variable does not exists' + text());
+          value = (value as Record<string, unknown>)[fieldName];
+        }
+        return value;
+      }
     }
     const evaluateFunction = (): unknown => {
       if(!cursor.firstChild()) throw new Error('Expression has no children' + text());
       let value: unknown;
+      let isBlank: boolean;
       const name = text();
       switch(name) {
         case 'ISBLANK':
@@ -81,6 +82,21 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
           cursor.parent();
           if(typeof value !== 'number') throw new Error('CEILING function argument is not a number: ' + text());
           return Math.ceil(value);
+        case 'BLANKVALUE':
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            throw new Error('BLANKVALUE function requires 2 arguments: ' + text());
+          }
+          value = evaluateNode();
+          isBlank = value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            cursor.parent();
+            throw new Error('BLANKVALUE function requires 2 arguments: ' + text());
+          }
+          if(isBlank) value = evaluateNode();
+          cursor.parent();
+          return value;
         case 'IF':
           if(!cursor.nextSibling()) throw new Error('IF function has no arguments' + text());
           value = evaluateNode();
