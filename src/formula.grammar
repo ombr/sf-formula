@@ -16,7 +16,7 @@ Function { Identifier "(" (Expr ("," Expr)*)? ")" }
 
 @tokens {
   space { @whitespace+ }
-  Number { $[0-9]+ }
+  Number { "-"? $[0-9]+ ("." $[0-9]+)? }
   String { '"' !["]* '"' }
   Boolean { "true" | "false" }
   AddOperator { "+" | "-" | "&" }

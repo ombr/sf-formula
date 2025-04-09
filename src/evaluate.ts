@@ -13,35 +13,36 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
     };
     
     const evaluateFirstChild = (): unknown => {
-      if(!cursor.firstChild()) throw new Error('Expression has no children');
+      if(!cursor.firstChild()) throw new Error('Expression has no children' + text());
       const value = evaluateNode();
       cursor.parent();
       return value;
     };
     const evaluateVariable = (context: Context): unknown => {
-      if(!cursor.firstChild()) throw new Error('Variable has no children');
-      let fieldName = text();
-      if(typeof context === 'function') {
-        const variables = [fieldName];
-        while(cursor.nextSibling()) {
-          variables.push(text());
-        }
-        cursor.parent();
-        return context(variables);
-      }
-      let value: unknown = context[fieldName];
-      if(value === undefined) throw new Error('Variable does not exists');
+      if(!cursor.firstChild()) throw new Error('Variable has no children' + text());
+      const fieldName = text();
+      const variables = [fieldName];
       while(cursor.nextSibling()) {
-        fieldName = text();
-        if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) throw new Error('Variable does not exists');
-        value = (value as Record<string, unknown>)[fieldName];
+        variables.push(text());
       }
       cursor.parent();
-      return value;
+      if(variables.length === 1 && variables[0] === 'null') return null;
+      if(variables.length === 1 && variables[0] === 'undefined') return undefined;
+      if(typeof context === 'function') {
+        return context(variables);
+      } else {
+        let value:unknown = context;
+        for(const fieldName of variables) {
+          if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) throw new Error('Variable does not exists' + text());
+          value = (value as Record<string, unknown>)[fieldName];
+        }
+        return value;
+      }
     }
     const evaluateFunction = (): unknown => {
-      if(!cursor.firstChild()) throw new Error('Expression has no children');
+      if(!cursor.firstChild()) throw new Error('Expression has no children' + text());
       let value: unknown;
+      let isBlank: boolean;
       const name = text();
       switch(name) {
         case 'ISBLANK':
@@ -69,6 +70,33 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
           cursor.parent();
           if(typeof value !== 'number') throw new Error('TEXT function argument is not a number: ' + text());
           return value.toString();
+        case 'FLOOR':
+          if(!cursor.nextSibling()) throw new Error('FLOOR function has no arguments');
+          value = evaluateNode();
+          cursor.parent();
+          if(typeof value !== 'number') throw new Error('FLOOR function argument is not a number: ' + text());
+          return Math.floor(value);
+        case 'CEILING':
+          if(!cursor.nextSibling()) throw new Error('CEILING function has no arguments');
+          value = evaluateNode();
+          cursor.parent();
+          if(typeof value !== 'number') throw new Error('CEILING function argument is not a number: ' + text());
+          return Math.ceil(value);
+        case 'BLANKVALUE':
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            throw new Error('BLANKVALUE function requires 2 arguments: ' + text());
+          }
+          value = evaluateNode();
+          isBlank = value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
+          if(!cursor.nextSibling()) {
+            cursor.parent();
+            cursor.parent();
+            throw new Error('BLANKVALUE function requires 2 arguments: ' + text());
+          }
+          if(isBlank) value = evaluateNode();
+          cursor.parent();
+          return value;
         case 'IF':
           if(!cursor.nextSibling()) throw new Error('IF function has no arguments' + text());
           value = evaluateNode();
@@ -78,14 +106,14 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
             cursor.parent();
             return value;
           } else {
-            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument');
-            if(!cursor.nextSibling()) throw new Error('IF function is missing false argument');
+            if(!cursor.nextSibling()) throw new Error('IF function is missing true argument ' + text());
+            if(!cursor.nextSibling()) throw new Error('IF function is missing false argument ' + text());
             value = evaluateNode();
             cursor.parent();
             return value;
           }
         default:
-          throw new Error(`Unknown function: ${name}`);
+          throw new Error(`Unknown function: ${name} ${text()}`);
       }
     }
     const eachChild = (callback: (index: number) => void): void => {
@@ -125,27 +153,27 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
               case CompOperator:
                 switch(operator.text) {
                   case '>=':
-                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    if(typeof value !== 'number') throw new Error('Value is not a number' + text());
                     right = evaluateNode();
-                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                     value = value >= right;
                     break;
                   case '<=':
-                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    if(typeof value !== 'number') throw new Error('Value is not a number' + text());
                     right = evaluateNode();
-                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                     value = value <= right;
                     break;
                   case '>':
-                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    if(typeof value !== 'number') throw new Error('Value is not a number' + text());
                     right = evaluateNode();
-                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                     value = value > right;
                     break;
                   case '<':
-                    if(typeof value !== 'number') throw new Error('Value is not a number');
+                    if(typeof value !== 'number') throw new Error('Value is not a number' + text());
                     right = evaluateNode();
-                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                     value = value < right;
                     break;
                   case '==':
@@ -179,18 +207,18 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
                     }
                     break;
                   case '-':
-                    if(typeof value !== 'number') throw new Error('Value is not a number');
-                    if(typeof right !== 'number') throw new Error('Value is not a number');
+                    if(typeof value !== 'number') throw new Error('Value is not a number' + text());
+                    if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                     value -= right;
                     break;
                   default:
-                    throw new Error('Unknown operator');
+                    throw new Error('Unknown operator' + text());
                 }
                 break;
               case MulOperator:
-                if(typeof value !== 'number') throw new Error('Value is not a number');
+                if(typeof value !== 'number') throw new Error('Value is not a number' + text());
                 right = evaluateNode();
-                if(typeof right !== 'number') throw new Error('Value is not a number');
+                if(typeof right !== 'number') throw new Error('Value is not a number' + text());
                 switch(operator.text) {
                   case '*':
                     value *= right;
@@ -199,11 +227,11 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
                     value = value / right;
                     break;
                   default:
-                    throw new Error('Unknown operator');
+                    throw new Error('Unknown operator' + text());
                 }
                 break;
               default:
-                throw new Error('Unknown operator');
+                throw new Error('Unknown operator' + text());
             }
           } else {
             const Operators = [OrOperator, AndOperator, MulOperator, AddOperator, CompOperator];
@@ -216,10 +244,10 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
         });
         return value;
       case Number:
-        return parseInt(text(), 10);
+        return parseFloat(text());
       case String:
         value = text();
-        if(typeof value !== 'string') throw new Error('Value is not a string');
+        if(typeof value !== 'string') throw new Error('Value is not a string' + text());
         return value.substring(1, value.length - 1);
       case Boolean:
         return text() === "true";
@@ -229,7 +257,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}): unknown {
         return evaluateFunction();
       default:
         if(nodeType === 0) return undefined;
-        throw new Error(`Unknown node type: ${nodeType}`);
+        throw new Error(`Unknown node type: ${nodeType} ${text()}`);
     }
   }
   return evaluateNode();
