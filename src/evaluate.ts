@@ -42,7 +42,6 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
       return getVariable(variables);
     }
     const evaluateFunction = (cursor: TreeCursor): unknown => {
-      console.log('evaluateFunction', text(cursor))
       if(!cursor.firstChild()) throw new Error('Expression has no children' + text(cursor));
       const name = text(cursor);
       const func = options.functions[name];
