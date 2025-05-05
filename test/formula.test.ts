@@ -19,6 +19,7 @@ describe('formula_eval', () => {
     });
   }
 
+
   // Some basic usecases
   describe('Basics', () => {
     testFormula('"Hello"', {}, 'Hello', 'String');
@@ -321,4 +322,41 @@ describe('formula_eval', () => {
       'invalid function name'
     );* /
   }); */
+
+  describe('Dynamic functions', () => {
+    const today = new Date();
+    testFormula('TODAY()', (variables: string[])=> {
+      assert(variables.length === 1);
+      assert(variables[0] === 'TODAY');
+      return () => {
+        return today;
+      }
+    }, today, 'Dynamic function without arguments');
+
+    testFormula('INC(12)', (variables: string[])=> {
+      assert(variables.length === 1);
+      assert(variables[0] === 'TODAY');
+      return (...args: Array<()=>unknown>) => {
+        assert(args.length === 1);
+        const arg = args[0]();
+        if(typeof arg !== 'number') throw new Error('OUPS ?');
+        assert(arg === 12);
+
+        return arg + 1;
+      }
+    }, 13, 'Dynamic function with one argument');
+
+    testFormula('SUM(12, 4)', (variables: string[])=> {
+      assert(variables.length === 1);
+      assert(variables[0] === 'TODAY');
+      return (...args: Array<()=>unknown>) => {
+        assert(args.length === 2);
+        const values = args.map((f)=> f());
+        assert(values[0] === 12);
+        assert(values[1] === 4);
+
+        return 12 + 4;
+      }
+    }, 12 + 4, 'Dynamic function with arguments');
+  });
 });
