@@ -6,7 +6,7 @@ AndExpr { CompExpr (AndOperator CompExpr)* }
 CompExpr { AddExpr (CompOperator AddExpr)* }
 AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
-Term { Number | String | Boolean | Variable | ParenExpr | Function }
+Term { Number | String | Boolean | Function | ParenExpr | Variable }
 ParenExpr { "(" Expr ")" }
 Variable { VariableField ("." VariableField)* }
 VariableField { Identifier }

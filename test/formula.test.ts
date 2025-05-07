@@ -1,11 +1,21 @@
 import { assert } from 'console';
-import { Context, formulaEval } from '../src/formula';
+import { Context, formulaEval, Options } from '../src/formula';
 
 describe('formula_eval', () => {
   function testFormula(formula: string, context: Context, expected: unknown, description: string) {
     const title = `${description} ${formula} => ${JSON.stringify(expected)}`;
     it(title, () => {
       expect(formulaEval(formula, context)).toBe(expected);
+    });
+    /*it(`serialize | ${title}`, () => {
+      expect(parser.parse(formula).serialize()).toBe(formula.trim());
+    });*/
+  }
+
+  function testFormulaWithOptions(formula: string, context: Context, options: Options, expected: unknown, description: string) {
+    const title = `${description} ${formula} => ${JSON.stringify(expected)}`;
+    it(title, () => {
+      expect(formulaEval(formula, context, options)).toBe(expected);
     });
     /*it(`serialize | ${title}`, () => {
       expect(parser.parse(formula).serialize()).toBe(formula.trim());
@@ -58,7 +68,7 @@ describe('formula_eval', () => {
     testFormula('"Hello" ', {}, 'Hello', 'ending with whitespace');
     testFormula('  12', {}, 12, 'ending with whitespace');
     testFormula('12 ', {}, 12, 'ending with whitespace');
-  });//*/
+  });
 
   // Text Operations
   describe('Variables', () => {
@@ -69,7 +79,7 @@ describe('formula_eval', () => {
       { FirstName: "John", LastName: "Doe" }, 
       'John Doe', 
       'text concatenation');
-  });//*/
+  });
 
   describe('Functions', () => {
     testFormula('NOT(true)', {}, false, 'NOT true');
@@ -82,7 +92,6 @@ describe('formula_eval', () => {
       { Email: "" },
       true,
       'IS BLANK false');
-    testFormula('ISBLANK()', {}, true, 'IS BLANK with no argument return true');
     testFormula('ISBLANK(Email)',
       { Email: " " },
       true,
@@ -187,26 +196,26 @@ describe('formula_eval', () => {
       { Amount: 2 },
       "Low",
       'simple if condition');
-    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
       { name: "J" },
       "Missing 2 Chars",
       'simple if condition');
-    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
       { name: "Jo" },
       "Missing 1 Chars",
       'simple if condition');
-    testFormula('IF(LENGTH(name) < 3, "Missing " + TEXT(3 - LENGTH(name)) + " Chars" , true)',
+    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
       { name: "John" },
       true,
       'simple if condition');
-    testFormula('IF(LENGTH(name.value) < 3, "Missing " + TEXT(3 - LENGTH(name.value)) + " chars" , "")',
+    testFormula('IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
       (variables: string[])=> {
         if(variables.join('.') !== "name.value") throw new Error("Oups trying to evaluate another variable than name.value");
         return 'Jo'
       },
       "Missing 1 chars",
       'simple if condition');
-    testFormula('IF(LENGTH(name.value) < 3, "Missing " + TEXT(3 - LENGTH(name.value)) + " chars" , "")',
+    testFormula('IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
       (variables: string[])=> {
         if(variables.join('.') !== "name.value") throw new Error("Oups trying to evaluate another variable than name.value");
         return 'John'
@@ -235,23 +244,23 @@ describe('formula_eval', () => {
 
 
   describe('functions', () => {
-    testFormula('LENGTH("Hello")', {}, 5, 'LENGTH function');
-    testFormula('LENGTH("")', {}, 0, 'LENGTH function');
-    testFormulaError('LENGTH(123)', {}, 'LENGTH function argument is not a string: LENGTH(123)', 'LENGTH function');
+    testFormula('LEN("Hello")', {}, 5, 'LEN function');
+    testFormula('LEN("")', {}, 0, 'LEN function');
+    testFormulaError('LEN(123)', {}, 'Argument should be a string in LEN(123)', 'LEN function');
 
     testFormula('FLOOR(5.7)', {}, 5, 'FLOOR function with positive number');
     testFormula('FLOOR(5.2)', {}, 5, 'FLOOR function with positive number');
     testFormula('FLOOR(-5.7)', {}, -6, 'FLOOR function with negative number');
     testFormula('FLOOR(-5.2)', {}, -6, 'FLOOR function with negative number');
     testFormula('FLOOR(5)', {}, 5, 'FLOOR function with integer');
-    testFormulaError('FLOOR("abc")', {}, 'FLOOR function argument is not a number: FLOOR("abc")', 'FLOOR function with non-number');
+    testFormulaError('FLOOR("abc")', {}, 'Argument should be a number in FLOOR("abc")', 'FLOOR function with non-number');
 
     testFormula('CEILING(5.7)', {}, 6, 'CEILING function with positive number');
     testFormula('CEILING(5.2)', {}, 6, 'CEILING function with positive number');
     testFormula('CEILING(-5.7)', {}, -5, 'CEILING function with negative number');
     testFormula('CEILING(-5.2)', {}, -5, 'CEILING function with negative number');
     testFormula('CEILING(5)', {}, 5, 'CEILING function with integer');
-    testFormulaError('CEILING("abc")', {}, 'CEILING function argument is not a number: CEILING("abc")', 'CEILING function with non-number');
+    testFormulaError('CEILING("abc")', {}, 'Argument should be a number in CEILING("abc")', 'CEILING function with non-number');
 
     testFormula('BLANKVALUE("", "Default")', {}, "Default", 'BLANKVALUE with empty string');
     testFormula('BLANKVALUE(null, "Default")', {}, "Default", 'BLANKVALUE with null');
@@ -263,8 +272,8 @@ describe('formula_eval', () => {
     testFormula('BLANKVALUE(false, "Default")', {}, false, 'BLANKVALUE with false');
     testFormula('BLANKVALUE(Name, "Unknown")', { Name: "" }, "Unknown", 'BLANKVALUE with blank variable');
     testFormula('BLANKVALUE(Name, "Unknown")', { Name: "John" }, "John", 'BLANKVALUE with non-blank variable');
-    testFormulaError('BLANKVALUE()', {}, 'BLANKVALUE function requires 2 arguments: BLANKVALUE()', 'BLANKVALUE with no arguments');
-    testFormulaError('BLANKVALUE("test")', {}, 'BLANKVALUE function requires 2 arguments: BLANKVALUE("test")', 'BLANKVALUE with 1 argument');
+    testFormulaError('BLANKVALUE()', {}, 'Not enough arguments 0/2 in BLANKVALUE()', 'BLANKVALUE with no arguments');
+    testFormulaError('BLANKVALUE("test")', {}, 'Not enough arguments 1/2 in BLANKVALUE("test")', 'BLANKVALUE with 1 argument');
   });
 
   describe('Dynamic context', () => {
@@ -321,4 +330,29 @@ describe('formula_eval', () => {
       'invalid function name'
     );* /
   }); */
+
+  describe('Dynamic functions', () => {
+    const today = new Date();
+    testFormulaWithOptions('TODAY()', {}, { functions: { 'TODAY': () => today } }, today, 'Dynamic function without arguments');
+    testFormulaWithOptions('INC(12)',{}, {functions: { 'INC': (...args: Array<()=>unknown>) => {
+        assert(args.length === 1);
+        const arg = args[0]();
+        if(typeof arg !== 'number') throw new Error('OUPS ?');
+        assert(arg === 12);
+
+        return arg + 1;
+      }
+    }}, 13, 'Dynamic function with one argument');
+
+    testFormulaWithOptions('SUM(12, 4)',{}, {
+      functions: {'SUM': (...args: Array<()=>unknown>) => {
+        assert(args.length === 2);
+        const values = args.map((f)=> f());
+        assert(values[0] === 12);
+        assert(values[1] === 4);
+
+        return 12 + 4;
+      }
+    }}, 12 + 4, 'Dynamic function with arguments');
+  });
 });
