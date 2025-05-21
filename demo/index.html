@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula Evaluator Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="../node_modules/codemirror/lib/codemirror.css">
+</head>
+<body>
+    <h1>Formula Evaluator Demo</h1>
+
+    <section>
+        <h2>Enter Formula</h2>
+        <textarea id="formulaInput"></textarea>
+        <button id="evaluateButton">Evaluate</button>
+    </section>
+
+    <section>
+        <h2>Result</h2>
+        <pre id="resultArea"></pre>
+    </section>
+
+    <section>
+        <h2>Available Functions</h2>
+        <ul id="functionsList">
+            <!-- Functions will be listed here by script.js -->
+        </ul>
+    </section>
+
+    <script src="../node_modules/codemirror/lib/codemirror.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
