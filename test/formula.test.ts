@@ -248,20 +248,6 @@ describe('formula_eval', () => {
     testFormula('LEN("")', {}, 0, 'LEN function');
     testFormulaError('LEN(123)', {}, 'Argument should be a string in LEN(123)', 'LEN function');
 
-    testFormula('FLOOR(5.7)', {}, 5, 'FLOOR function with positive number');
-    testFormula('FLOOR(5.2)', {}, 5, 'FLOOR function with positive number');
-    testFormula('FLOOR(-5.7)', {}, -6, 'FLOOR function with negative number');
-    testFormula('FLOOR(-5.2)', {}, -6, 'FLOOR function with negative number');
-    testFormula('FLOOR(5)', {}, 5, 'FLOOR function with integer');
-    testFormulaError('FLOOR("abc")', {}, 'Argument should be a number in FLOOR("abc")', 'FLOOR function with non-number');
-
-    testFormula('CEILING(5.7)', {}, 6, 'CEILING function with positive number');
-    testFormula('CEILING(5.2)', {}, 6, 'CEILING function with positive number');
-    testFormula('CEILING(-5.7)', {}, -5, 'CEILING function with negative number');
-    testFormula('CEILING(-5.2)', {}, -5, 'CEILING function with negative number');
-    testFormula('CEILING(5)', {}, 5, 'CEILING function with integer');
-    testFormulaError('CEILING("abc")', {}, 'Argument should be a number in CEILING("abc")', 'CEILING function with non-number');
-
     testFormula('BLANKVALUE("", "Default")', {}, "Default", 'BLANKVALUE with empty string');
     testFormula('BLANKVALUE(null, "Default")', {}, "Default", 'BLANKVALUE with null');
     testFormula('BLANKVALUE(undefined, "Default")', {}, "Default", 'BLANKVALUE with undefined');

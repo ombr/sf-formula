@@ -1,3 +1,5 @@
+import * as mathFunctions from './math-functions';
+
 export function validateArgs(args: Array<()=> unknown>, validations: {min?: number, max?: number}) {
   const { min, max } = validations;
   if(min && args.length < min) throw new Error(`Not enough arguments ${args.length}/${min}`);
@@ -35,16 +37,6 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     if(typeof value !== 'number') throw new Error('Argument should be a number')
     return value.toString();
   },
-  'FLOOR': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    if(typeof value !== 'number') throw new Error('Argument should be a number')
-    return Math.floor(value);
-  },
-  'CEILING': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    if(typeof value !== 'number') throw new Error('Argument should be a number')
-    return Math.ceil(value);
-  },
   'LEN': (...args: Array<() => unknown>) => {
     const value = validateArgs(args, {min: 1, max: 1})[0]();
     if(typeof value !== 'string') throw new Error('Argument should be a string')
@@ -61,5 +53,6 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       return elseArg();
     }
     return undefined;
-  }
+  },
+  ...mathFunctions
 }
