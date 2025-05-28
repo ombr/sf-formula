@@ -5,10 +5,13 @@ export function validateArgs(args: Array<()=> unknown>, validations: {min?: numb
   return args;
 }
 
+import { textFunctions } from "./textFunctions";
+
 const isBlank = (value: unknown) => {
   return value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
 }
 export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => unknown> = {
+  ...textFunctions, // Spread text functions here
   'ISBLANK': (...args: Array<() => unknown>) => {
     const value = validateArgs(args, {min: 1, max: 1})[0]();
     return isBlank(value);
@@ -30,11 +33,6 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       // eslint-disable-next-line no-constant-condition
     } while(true)
   },
-  'TEXT': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    if(typeof value !== 'number') throw new Error('Argument should be a number')
-    return value.toString();
-  },
   'FLOOR': (...args: Array<() => unknown>) => {
     const value = validateArgs(args, {min: 1, max: 1})[0]();
     if(typeof value !== 'number') throw new Error('Argument should be a number')
@@ -44,11 +42,6 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     const value = validateArgs(args, {min: 1, max: 1})[0]();
     if(typeof value !== 'number') throw new Error('Argument should be a number')
     return Math.ceil(value);
-  },
-  'LEN': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    if(typeof value !== 'string') throw new Error('Argument should be a string')
-    return value.length;
   },
   'IF': (...args: Array<() => unknown>) => {
     const [ifArg, thenArg, elseArg] = validateArgs(args, {min: 2, max: 3});
@@ -62,4 +55,6 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     }
     return undefined;
   }
+  // Note: Existing TEXT and LEN functions were removed in a previous step.
+  // The ...textFunctions spread will add the new versions of TEXT, LEN, and all other text functions.
 }
