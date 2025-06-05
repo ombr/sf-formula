@@ -1,46 +1,84 @@
-import { formulaEval } from 'sf-formula';
+import { formulaEval, formula } from 'sf-formula';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
-const demoVariables = {
-    x: 10,
-    y: 5,
-    name: "John",
-    isActive: true,
-    PI: Math.PI,
-    firstName: "John",
-    lastName: "Doe",
-    age: 30,
-    balance: 1500.75
-};
+import { jsonParseLinter } from '@codemirror/lang-json';
+import { oneDark } from '@codemirror/theme-one-dark';
+import { linter } from '@codemirror/lint';
+import { json } from '@codemirror/lang-json';
+console.log('ICIC ?', formula(), json());
 
-// Demo functionality
 class FormulaDemo {
     private resultDiv: HTMLElement;
     private editorView!: EditorView;
+    private variablesView!: EditorView;
     private inputContainer: HTMLElement;
+    private formulaVariables: HTMLElement;
+    private formula = 'IF(x +  y + nested.property > 0, "Yes", "No")';
+    private demoVariables = {
+      x: 10,
+      nested: {
+        property: 1,
+        b: 2,
+        c: 3
+      },
+      y: 5,
+      name: "John",
+      isActive: true,
+      PI: Math.PI,
+      firstName: "John",
+      lastName: "Doe",
+      age: 30,
+      balance: 1500.75
+    };
 
     constructor() {
         this.resultDiv = document.getElementById('result') as HTMLElement;
         this.inputContainer = document.getElementById('formulaInputContainer') as HTMLElement;
+        this.formulaVariables = document.getElementById('formulaVariables') as HTMLElement;
         
         this.initializeCodeMirror();
         this.evaluateFormula();
     }
 
     private initializeCodeMirror(): void {
+        this.inputContainer.innerHTML = '';
         const startState = EditorState.create({
-            doc: 'x + y',
+            doc: this.formula,
             extensions: [
                 basicSetup,
+                json(),
+                oneDark,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
-                        const formula = this.editorView.state.doc.toString().trim();
-                        if (formula) {
-                            this.evaluateFormula();
-                        }
+                        this.formula = this.editorView.state.doc.toString().trim();
+                        this.evaluateFormula();
                     }
                 })
             ]
+        });
+
+        const variablesState = EditorState.create({
+            doc: JSON.stringify(this.demoVariables, null, 2),
+            extensions: [
+                basicSetup,
+                json(),
+                linter(jsonParseLinter()),
+                EditorView.updateListener.of((update) => {
+                    if (update.docChanged) {
+                        try {
+                          this.demoVariables = JSON.parse(this.variablesView.state.doc.toString().trim());
+                        } catch (e) {
+                          console.error(e);
+                        }
+                        this.evaluateFormula();
+                    }
+                })
+            ]
+        });
+
+        this.variablesView = new EditorView({
+            state: variablesState,
+            parent: this.formulaVariables
         });
 
         this.editorView = new EditorView({
@@ -50,18 +88,15 @@ class FormulaDemo {
     }
 
     evaluateFormula(): void {
-        const formula = this.editorView.state.doc.toString();
         try {
-            // Create a context with demo variables
-            const result = formulaEval(formula, demoVariables);
-            this.showResult(formula, result);
+            const result = formulaEval(this.formula, this.demoVariables);
+            this.showResult(result);
         } catch (error) {
             this.showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
     loadExample(example: string): void {
-        // Replace the entire document content
         this.editorView.dispatch({
             changes: {
                 from: 0,
@@ -74,13 +109,12 @@ class FormulaDemo {
         this.evaluateFormula();
     }
 
-    private showResult(formula: string, result: any): void {
+    private showResult(result: any): void {
         const resultType = typeof result;
         const displayResult = this.formatResult(result);
         
         this.resultDiv.innerHTML = `
             <div class="result">
-                <strong>Formula:</strong> <code>${this.escapeHtml(formula)}</code><br>
                 <strong>Result:</strong> <code>${this.escapeHtml(displayResult)}</code><br>
                 <strong>Type:</strong> <span style="color: #666; font-size: 0.9em;">${resultType}</span>
             </div>

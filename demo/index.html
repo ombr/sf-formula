@@ -140,23 +140,8 @@
         <div class="demo-section">
             <h3>Formula Parser & Evaluator</h3>
             <p>Enter a formula to see it parsed and evaluated using the sf-formula library:</p>
-            <div id="formulaInputContainer"></div>
+            <div id="formulaInputContainer"> x + y </div>
             <div id="result"></div>
-        </div>
-
-        <div class="variables-section">
-            <h4>Available Variables:</h4>
-            <div class="variables-list">
-                <div>x = 10</div>
-                <div>y = 5</div>
-                <div>name = "John"</div>
-                <div>isActive = true</div>
-                <div>PI = 3.14159...</div>
-                <div>firstName = "John"</div>
-                <div>lastName = "Doe"</div>
-                <div>age = 30</div>
-                <div>balance = 1500.75</div>
-            </div>
         </div>
 
         <div class="demo-section">
@@ -184,6 +169,11 @@
             <button class="example-button" onclick="loadExample('3.14159')">3.14159</button>
             <button class="example-button" onclick="loadExample('-10')">-10</button>
             <button class="example-button" onclick="loadExample('age >= 18 AND balance > 1000')">age >= 18 AND balance > 1000</button>
+        </div>
+
+        <div class="variables-section">
+            <h4>Available Variables:</h4>
+            <div id="formulaVariables"></div>
         </div>
     </div>
 

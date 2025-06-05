@@ -1,16 +1,16 @@
-@top Expression { Expr end }
+@top FormulaText { expr end }
 
-Expr { OrExpr }
+expr { OrExpr }
 OrExpr { AndExpr (OrOperator AndExpr)* }
 AndExpr { CompExpr (AndOperator CompExpr)* }
 CompExpr { AddExpr (CompOperator AddExpr)* }
 AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
-Term { Number | String | Boolean | Function | ParenExpr | Variable }
-ParenExpr { "(" Expr ")" }
+Term { Number | String | Boolean | Function | parenExpr | Variable }
+parenExpr { "(" expr ")" }
 Variable { VariableField ("." VariableField)* }
 VariableField { Identifier }
-Function { Identifier "(" (Expr ("," Expr)*)? ")" }
+Function { Identifier "(" (expr ("," expr)*)? ")" }
 
 @skip { space }
 
@@ -29,3 +29,4 @@ Function { Identifier "(" (Expr ("," Expr)*)? ")" }
   end { @eof }
 }
 
+@external propSource formulaHighlighting from "./highlight"

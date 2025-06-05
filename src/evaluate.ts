@@ -1,5 +1,5 @@
 import { Tree, TreeCursor } from "@lezer/common";
-import { Expression, Number, MulExpr, String, Boolean, Expr, MulOperator, ParenExpr, Term, AddOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
+import { FormulaText, Number, MulExpr, String, Boolean, MulOperator, Term, AddOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
 import { Context, Options } from "./formula";
 
 function evaluate(tree: Tree, input: string, context: Context = {}, options: Options = { functions: {}}): unknown {
@@ -11,12 +11,6 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
       return input.slice(cursor.from, cursor.to);
     };
     
-    const evaluateFirstChild = (cursor: TreeCursor): unknown => {
-      if(!cursor.firstChild()) throw new Error('Expression has no children' + text(cursor));
-      const value = evaluateNode(cursor);
-      cursor.parent();
-      return value;
-    };
     const getVariable = (variables: string[]): unknown => {
       if(typeof context === 'function') {
         return context(variables);
@@ -80,11 +74,8 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
     };
 
     switch (nodeType) {
-      case Expression:
+      case FormulaText:
       case Term:
-      case ParenExpr:
-        return evaluateFirstChild(cursor);
-      case Expr:
       case MulExpr:
       case AddExpr:
       case OrExpr:

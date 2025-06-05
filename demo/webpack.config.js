@@ -14,6 +14,9 @@ module.exports = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        alias: {
+          '@codemirror/state': require.resolve('@codemirror/state')
+        }
     },
     output: {
         filename: 'demo.js',
