@@ -1,4 +1,4 @@
-import {parser} from "./parser"
+import {parser} from "./language"
 
 import { highlightCode, classHighlighter } from "@lezer/highlight"
 

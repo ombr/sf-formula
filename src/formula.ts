@@ -1,7 +1,9 @@
 import { evaluate } from "./evaluate";
 import { defaultFunctions } from "./functions";
-import { parser, formula } from "./lang-formula";
-export { parser, formula };
+import { parser } from "./language";
+import { languagePack } from "./lang-pack";
+import { html } from "./html";
+export { languagePack, parser, html};
 
 export type Context = Record<string, unknown> | ((variables: string[]) => unknown);
 export type Functions = Record<string, (...args: Array<()=> unknown>)=> unknown>;

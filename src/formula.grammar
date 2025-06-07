@@ -29,4 +29,6 @@ Function { Identifier "(" (expr ("," expr)*)? ")" }
   end { @eof }
 }
 
-@external propSource formulaHighlighting from "./highlight"
+@external propSource formulaHighlight from "./highlight"
+
+@detectDelim

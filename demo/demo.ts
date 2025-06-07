@@ -1,11 +1,11 @@
-import { formulaEval, formula } from 'sf-formula';
+import { formulaEval, languagePack, html } from 'sf-formula';
 import { EditorView, basicSetup } from 'codemirror';
-import { EditorState } from '@codemirror/state';
+import { EditorState, Compartment } from '@codemirror/state';
+import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { jsonParseLinter } from '@codemirror/lang-json';
 import { oneDark } from '@codemirror/theme-one-dark';
 import { linter } from '@codemirror/lint';
 import { json } from '@codemirror/lang-json';
-console.log('ICIC ?', formula(), json());
 
 class FormulaDemo {
     private resultDiv: HTMLElement;
@@ -42,11 +42,13 @@ class FormulaDemo {
 
     private initializeCodeMirror(): void {
         this.inputContainer.innerHTML = '';
+    const languageConf = new Compartment();
         const startState = EditorState.create({
             doc: this.formula,
             extensions: [
                 basicSetup,
-                json(),
+                languagePack(),
+                syntaxHighlighting(defaultHighlightStyle),
                 oneDark,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
@@ -90,7 +92,7 @@ class FormulaDemo {
     evaluateFormula(): void {
         try {
             const result = formulaEval(this.formula, this.demoVariables);
-            this.showResult(result);
+            this.showResult(result, this.formula);
         } catch (error) {
             this.showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
@@ -109,14 +111,15 @@ class FormulaDemo {
         this.evaluateFormula();
     }
 
-    private showResult(result: any): void {
+    private showResult(result: any, formula: string): void {
         const resultType = typeof result;
         const displayResult = this.formatResult(result);
         
         this.resultDiv.innerHTML = `
             <div class="result">
                 <strong>Result:</strong> <code>${this.escapeHtml(displayResult)}</code><br>
-                <strong>Type:</strong> <span style="color: #666; font-size: 0.9em;">${resultType}</span>
+                <strong>Type:</strong> <span style="color: #666; font-size: 0.9em;">${resultType}</span><br>
+                <strong>Formula:</strong> <code>${html(formula)}</code>
             </div>
         `;
     }

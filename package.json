@@ -7,8 +7,8 @@
   "scripts": {
     "test-luc": "cm-buildhelper src/formula.ts",
     "clean": "rimraf dist",
-    "generate-parser-basic": "lezer-generator src/formula.grammar -o src/parser.ts",
-    "generate-parser": "cm-buildhelper src/lang-formula.ts",
+    "generate-parser": "lezer-generator src/formula.grammar -o src/parser.ts",
+    "generate-parser-wip": "cm-buildhelper src/lang-formula.ts",
     "build": "npm run clean && npm run generate-parser && tsc -p tsconfig.json",
     "start": "npm run build && npm install --prefix demo && npm run dev --prefix demo",
     "test": "npm run build && jest",
@@ -29,6 +29,7 @@
   "author": "Luc Boissaye",
   "license": "MIT",
   "devDependencies": {
+    "@codemirror/buildhelper": "^1.0.0",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.37.1",
     "@commitlint/cli": "^19.7.1",
@@ -54,8 +55,7 @@
     "ts-jest": "^29.2.6",
     "typedoc": "^0.28.1",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.0",
-    "@codemirror/buildhelper": "^1.0.0"
+    "typescript-eslint": "^8.26.0"
   },
   "dependencies": {
     "@codemirror/language": "^6.0.0",
