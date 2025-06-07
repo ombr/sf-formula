@@ -405,4 +405,20 @@ describe('formula_eval', () => {
     testFormulaError('ISNULL()', {}, 'Not enough arguments 0/1 in ISNULL()', 'ISNULL no arguments');
     testFormulaError('ISNULL(1,2)', {}, 'Too many arguments 2/1 in ISNULL(1,2)', 'ISNULL too many arguments');
   });
+  describe('CASE', () => {
+    testFormula('CASE(3, 1, "One", 2, "Two", 3, "Three", "Other")', {}, "Three", 'CASE match third value');
+    testFormula('CASE(4, 1, "One", 2, "Two", 3, "Three", "Other")', {}, "Other", 'CASE use else_result');
+    testFormula('CASE(5, 1, "One", 2, "Two", 3, "Three")', {}, null, 'CASE no match, no else_result');
+    testFormula('CASE("B", "A", 10, "B", 20, "C", 30, 0)', {}, 20, 'CASE string match');
+    testFormula('CASE("D", "A", 10, "B", 20, "C", 30, 100)', {}, 100, 'CASE string use else_result');
+    testFormula('CASE("D", "A", 10, "B", 20, "C", 30)', {}, null, 'CASE string no match, no else');
+    testFormula('CASE(Status, "Open", 1, "Closed", 2, 0)', {Status: 'Open'}, 1, 'CASE var match');
+    testFormula('CASE(Status, "Pending", 1, "Closed", 2, 0)', {Status: 'Open'}, 0, 'CASE var use else_result');
+    testFormula('CASE(true, false, "No", true, "Yes", "Maybe")', {}, "Yes", 'CASE boolean expression');
+    testFormula('CASE(Amount, 50, "Fifty", 100, "Hundred", 200, "Two Hundred", "Other")', {Amount: 100}, "Hundred", 'CASE number expression');
+    testFormula('CASE(Amount, 50, "Fifty", 101, "HundredOne", "Other")', {Amount: 100}, "Other", 'CASE number expression else');
+    testFormulaError('CASE(1)', {}, 'Not enough arguments 1/3 in CASE(1)', 'CASE one argument');
+    testFormulaError('CASE(1, 2)', {}, 'Not enough arguments 2/3 in CASE(1, 2)', 'CASE two arguments');
+    testFormula('CASE(2, 2, "Val2")', {}, "Val2", 'CASE expression matches value, no else'); // This is valid: expression, value1, result1
+  });
 });

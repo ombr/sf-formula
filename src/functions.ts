@@ -99,4 +99,29 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     const expr = exprArg();
     return expr === null || expr === undefined;
   },
+  'CASE': (...args: Array<() => unknown>) => {
+    validateArgs(args, {min: 3});
+
+    const value = args[0]();
+    const numRemainingArgs = args.length - 1;
+
+    // Iterate through value/result pairs
+    // Each pair consists of 2 arguments.
+    // If numRemainingArgs is odd, the last one is the else_result.
+    const numPairs = Math.floor(numRemainingArgs / 2);
+
+    for (let i = 0; i < numPairs; i++) {
+      const valueN = args[1 + i * 2]();
+      if (value === valueN) {
+        return args[1 + i * 2 + 1]();
+      }
+    }
+
+    // Check for else_result: if there's an odd number of arguments after the expression
+    if (numRemainingArgs % 2 !== 0) {
+      return args[args.length - 1]();
+    }
+
+    return null;
+  },
 }
