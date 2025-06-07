@@ -3,7 +3,6 @@ import { EditorView, basicSetup } from 'codemirror';
 import { EditorState, Compartment } from '@codemirror/state';
 import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { jsonParseLinter } from '@codemirror/lang-json';
-import { oneDark } from '@codemirror/theme-one-dark';
 import { linter } from '@codemirror/lint';
 import { json } from '@codemirror/lang-json';
 
@@ -49,7 +48,6 @@ class FormulaDemo {
                 basicSetup,
                 languagePack(),
                 syntaxHighlighting(defaultHighlightStyle),
-                oneDark,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         this.formula = this.editorView.state.doc.toString().trim();

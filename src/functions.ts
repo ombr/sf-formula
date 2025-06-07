@@ -8,17 +8,7 @@ export function validateArgs(args: Array<()=> unknown>, validations: {min?: numb
 const isBlank = (value: unknown) => {
   return value === undefined || value === null || value === "" || (typeof value === 'string' && value.trim() === "");
 }
-export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => unknown> = {
-  'ISBLANK': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    return isBlank(value);
-  },
-  'NOT': (...args: Array<() => unknown>) => {
-    const value = validateArgs(args, {min: 1, max: 1})[0]();
-    if(typeof value !== 'boolean') throw new Error('Argument should be a boolean')
-    return !value;
-  },
-  'BLANKVALUE': (...args: Array<() => unknown>) => {
+const blankvalue = (...args: Array<() => unknown>) => {
     validateArgs(args, {min: 2});
     let i = 0;
     do {
@@ -29,6 +19,25 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       i++;
       // eslint-disable-next-line no-constant-condition
     } while(true)
+  };
+export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => unknown> = {
+  'ISBLANK': (...args: Array<() => unknown>) => {
+    const value = validateArgs(args, {min: 1, max: 1})[0]();
+    return isBlank(value);
+  },
+  'NOT': (...args: Array<() => unknown>) => {
+    const value = validateArgs(args, {min: 1, max: 1})[0]();
+    if(typeof value !== 'boolean') throw new Error('Argument should be a boolean')
+    return !value;
+  },
+  'BLANKVALUE': blankvalue,
+  'NULLVALUE': (...args: Array<() => unknown>) => {
+    const [exprArg, substituteExprArg] = validateArgs(args, {min: 2, max: 2});
+    const expr = exprArg();
+    if (expr === null || expr === undefined) {
+      return substituteExprArg();
+    }
+    return expr;
   },
   'TEXT': (...args: Array<() => unknown>) => {
     const value = validateArgs(args, {min: 1, max: 1})[0]();
@@ -61,5 +70,28 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       return elseArg();
     }
     return undefined;
-  }
+  },
+  'PI': (...args: Array<() => unknown>) => {
+    validateArgs(args, {min: 0, max: 0});
+    return Math.PI;
+  },
+  'ISNUMBER': (...args: Array<() => unknown>) => {
+    const [valueArg] = validateArgs(args, {min: 1, max: 1});
+    const value = valueArg();
+
+    if (typeof value === 'number') {
+      return isFinite(value);
+    }
+    if (typeof value === 'string') {
+      if (value.trim() === '') { // Salesforce ISNUMBER considers blank string not a number
+        return false;
+      }
+      // Number(value) correctly handles strings with surrounding whitespace like " 123 "
+      // and returns NaN for non-numeric strings like "abc" or "1,234" or "12.3.4"
+      const num = Number(value);
+      return !isNaN(num) && isFinite(num);
+    }
+    // Booleans, objects, null, undefined are not numbers for ISNUMBER
+    return false;
+  },
 }

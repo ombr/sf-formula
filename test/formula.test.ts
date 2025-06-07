@@ -355,4 +355,41 @@ describe('formula_eval', () => {
       }
     }}, 12 + 4, 'Dynamic function with arguments');
   });
+
+  describe('NULLVALUE', () => {
+    testFormula('NULLVALUE(NullVar, "Default")', {NullVar: null}, "Default", 'NULLVALUE null variable');
+    testFormula('NULLVALUE(NotDefined, "Default")', {}, "Default", 'NULLVALUE undefined variable');
+    testFormula('NULLVALUE("Actual", "Default")', {}, "Actual", 'NULLVALUE non-null string');
+    testFormula('NULLVALUE("", "Default")', {}, "", 'NULLVALUE empty string (not null)');
+    testFormula('NULLVALUE(0, "Default")', {}, 0, 'NULLVALUE zero (not null)');
+    testFormula('NULLVALUE(Name, "Unknown")', {Name: 'John'}, "John", 'NULLVALUE Name="John"');
+    testFormula('NULLVALUE(BLANKVALUE(null, null), "Subst")', {}, "Subst", 'NULLVALUE nested with null');
+    testFormulaError('NULLVALUE(1)', {}, 'Not enough arguments 1/2 in NULLVALUE(1)', 'NULLVALUE one argument');
+    testFormulaError('NULLVALUE()', {}, 'Not enough arguments 0/2 in NULLVALUE()', 'NULLVALUE one argument');
+  });
+
+  describe('ISNUMBER', () => {
+    testFormula('ISNUMBER(123)', {}, true, 'ISNUMBER 123');
+    testFormula('ISNUMBER(-123.45)', {}, true, 'ISNUMBER -123.45');
+    testFormula('ISNUMBER("123")', {}, true, 'ISNUMBER "123"');
+    testFormula('ISNUMBER("123.45")', {}, true, 'ISNUMBER "123.45"');
+    testFormula('ISNUMBER("-10")', {}, true, 'ISNUMBER "-10"');
+    testFormula('ISNUMBER("  123  ")', {}, true, 'ISNUMBER "  123  "');
+    testFormula('ISNUMBER("")', {}, false, 'ISNUMBER empty string');
+    testFormula('ISNUMBER("   ")', {}, false, 'ISNUMBER whitespace string');
+    testFormula('ISNUMBER("abc")', {}, false, 'ISNUMBER "abc"');
+    testFormula('ISNUMBER("12a3")', {}, false, 'ISNUMBER "12a3"');
+    testFormula('ISNUMBER("12.3.4")', {}, false, 'ISNUMBER "12.3.4"');
+    testFormula('ISNUMBER("1,234")', {}, false, 'ISNUMBER "1,234" (with comma)');
+    testFormula('ISNUMBER(true)', {}, false, 'ISNUMBER true');
+    testFormula('ISNUMBER(false)', {}, false, 'ISNUMBER false');
+    testFormula('ISNUMBER(NullVar)', {NullVar: null}, false, 'ISNUMBER null');
+    testFormula('ISNUMBER(NotDefined)', {}, false, 'ISNUMBER undefined');
+    testFormula('ISNUMBER(PI())', {}, true, 'ISNUMBER PI()');
+    testFormula('ISNUMBER(1/0)', {}, false, 'ISNUMBER Infinity (isFinite check)'); // JS 1/0 is Infinity
+    testFormula('ISNUMBER(0/0)', {}, false, 'ISNUMBER NaN (isFinite check)'); // JS 0/0 is NaN
+    testFormulaError('ISNUMBER()', {}, 'Not enough arguments 0/1 in ISNUMBER()', 'ISNUMBER no arguments');
+    testFormulaError('ISNUMBER(1,2)', {}, 'Too many arguments 2/1 in ISNUMBER(1,2)', 'ISNUMBER too many arguments');
+    // testFormula('ISNUMBER(DATE(2023,1,1))', {}, false, 'ISNUMBER Date object');
+  });
 });
