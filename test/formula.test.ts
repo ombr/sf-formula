@@ -421,4 +421,244 @@ describe('formula_eval', () => {
     testFormulaError('CASE(1, 2)', {}, 'Not enough arguments 2/3 in CASE(1, 2)', 'CASE two arguments');
     testFormula('CASE(2, 2, "Val2")', {}, "Val2", 'CASE expression matches value, no else'); // This is valid: expression, value1, result1
   });
+  describe('Math Functions', () => {
+    // ABS
+    describe('ABS', () => {
+      testFormula('ABS(10)', {}, 10, 'ABS positive');
+      testFormula('ABS(-10)', {}, 10, 'ABS negative');
+      testFormula('ABS(0)', {}, 0, 'ABS zero');
+      testFormulaError('ABS("text")', {}, 'Argument 1 of ABS must be a number in ABS("text")', 'ABS text input');
+      testFormulaError('ABS()', {}, 'Not enough arguments 0/1 in ABS()', 'ABS no arguments');
+      testFormulaError('ABS(1, 2)', {}, 'Too many arguments 2/1 in ABS(1, 2)', 'ABS too many arguments');
+    });
+
+    // ACOS
+    describe('ACOS', () => {
+      testFormula('ACOS(1)', {}, 0, 'ACOS 1');
+      testFormula('ACOS(0)', {}, Math.PI / 2, 'ACOS 0');
+      testFormula('ACOS(-1)', {}, Math.PI, 'ACOS -1');
+      testFormula('ACOS(0.5)', {}, Math.acos(0.5), 'ACOS 0.5');
+      testFormula('ACOS(2)', {}, null, 'ACOS 2 (out of range)');
+      testFormula('ACOS(-2)', {}, null, 'ACOS -2 (out of range)');
+      testFormulaError('ACOS("text")', {}, 'Argument 1 of ACOS must be a number in ACOS("text")', 'ACOS text input');
+      testFormulaError('ACOS()', {}, 'Not enough arguments 0/1 in ACOS()', 'ACOS no arguments');
+      testFormulaError('ACOS(1, 2)', {}, 'Too many arguments 2/1 in ACOS(1, 2)', 'ACOS too many arguments');
+    });
+
+    // ASIN
+    describe('ASIN', () => {
+      testFormula('ASIN(1)', {}, Math.PI / 2, 'ASIN 1');
+      testFormula('ASIN(0)', {}, 0, 'ASIN 0');
+      testFormula('ASIN(-1)', {}, -Math.PI / 2, 'ASIN -1');
+      testFormula('ASIN(0.5)', {}, Math.asin(0.5), 'ASIN 0.5');
+      testFormula('ASIN(2)', {}, null, 'ASIN 2 (out of range)');
+      testFormula('ASIN(-2)', {}, null, 'ASIN -2 (out of range)');
+      testFormulaError('ASIN("text")', {}, 'Argument 1 of ASIN must be a number in ASIN("text")', 'ASIN text input');
+      testFormulaError('ASIN()', {}, 'Not enough arguments 0/1 in ASIN()', 'ASIN no arguments');
+      testFormulaError('ASIN(1, 2)', {}, 'Too many arguments 2/1 in ASIN(1, 2)', 'ASIN too many arguments');
+    });
+
+    // ATAN
+    describe('ATAN', () => {
+      testFormula('ATAN(0)', {}, 0, 'ATAN 0');
+      testFormula('ATAN(1)', {}, Math.PI / 4, 'ATAN 1');
+      testFormulaError('ATAN("text")', {}, 'Argument 1 of ATAN must be a number in ATAN("text")', 'ATAN text input');
+      testFormulaError('ATAN()', {}, 'Not enough arguments 0/1 in ATAN()', 'ATAN no arguments');
+      testFormulaError('ATAN(1, 2)', {}, 'Too many arguments 2/1 in ATAN(1, 2)', 'ATAN too many arguments');
+    });
+
+    // ATAN2
+    describe('ATAN2', () => {
+      testFormula('ATAN2(0, 0)', {}, 0, 'ATAN2(0,0)');
+      testFormula('ATAN2(1, 1)', {}, Math.PI / 4, 'ATAN2(1,1)');
+      testFormula('ATAN2(10, 0)', {}, Math.PI / 2, 'ATAN2(10,0)');
+      testFormula('ATAN2(0, 10)', {}, 0, 'ATAN2(0,10)');
+      testFormulaError('ATAN2("text", 1)', {}, 'Argument 1 of ATAN2 must be a number in ATAN2("text", 1)', 'ATAN2 text input for arg1');
+      testFormulaError('ATAN2(1, "text")', {}, 'Argument 2 of ATAN2 must be a number in ATAN2(1, "text")', 'ATAN2 text input for arg2');
+      testFormulaError('ATAN2()', {}, 'Not enough arguments 0/2 in ATAN2()', 'ATAN2 no arguments');
+      testFormulaError('ATAN2(1)', {}, 'Not enough arguments 1/2 in ATAN2(1)', 'ATAN2 one argument');
+      testFormulaError('ATAN2(1, 2, 3)', {}, 'Too many arguments 3/2 in ATAN2(1, 2, 3)', 'ATAN2 too many arguments');
+    });
+
+    // COS
+    describe('COS', () => {
+      testFormula('COS(0)', {}, 1, 'COS 0');
+      testFormula('COS(PI())', {}, -1, 'COS PI');
+      testFormula('COS(PI()/2)', {}, Math.cos(Math.PI/2), 'COS PI/2 (close to 0)');
+      testFormulaError('COS("text")', {}, 'Argument 1 of COS must be a number in COS("text")', 'COS text input');
+      testFormulaError('COS()', {}, 'Not enough arguments 0/1 in COS()', 'COS no arguments');
+      testFormulaError('COS(1, 2)', {}, 'Too many arguments 2/1 in COS(1, 2)', 'COS too many arguments');
+    });
+
+    // EXP
+    describe('EXP', () => {
+      testFormula('EXP(1)', {}, Math.E, 'EXP 1');
+      testFormula('EXP(0)', {}, 1, 'EXP 0');
+      testFormula('EXP(2)', {}, Math.exp(2), 'EXP 2');
+      testFormulaError('EXP("text")', {}, 'Argument 1 of EXP must be a number in EXP("text")', 'EXP text input');
+      testFormulaError('EXP()', {}, 'Not enough arguments 0/1 in EXP()', 'EXP no arguments');
+      testFormulaError('EXP(1, 2)', {}, 'Too many arguments 2/1 in EXP(1, 2)', 'EXP too many arguments');
+    });
+
+    // LN
+    describe('LN', () => {
+      testFormula('LN(EXP(1))', {}, 1, 'LN(e)');
+      testFormula('LN(1)', {}, 0, 'LN 1');
+      testFormulaError('LN("text")', {}, 'Argument 1 of LN must be a number in LN("text")', 'LN text input');
+      testFormulaError('LN(0)', {}, 'Argument 1 of LN must be a positive number in LN(0)', 'LN zero');
+      testFormulaError('LN(-1)', {}, 'Argument 1 of LN must be a positive number in LN(-1)', 'LN negative');
+      testFormulaError('LN()', {}, 'Not enough arguments 0/1 in LN()', 'LN no arguments');
+      testFormulaError('LN(1, 2)', {}, 'Too many arguments 2/1 in LN(1, 2)', 'LN too many arguments');
+    });
+
+    // LOG
+    describe('LOG', () => {
+      testFormula('LOG(10)', {}, 1, 'LOG 10');
+      testFormula('LOG(100)', {}, 2, 'LOG 100');
+      testFormula('LOG(1)', {}, 0, 'LOG 1');
+      testFormulaError('LOG("text")', {}, 'Argument 1 of LOG must be a number in LOG("text")', 'LOG text input');
+      testFormulaError('LOG(0)', {}, 'Argument 1 of LOG must be a positive number in LOG(0)', 'LOG zero');
+      testFormulaError('LOG(-1)', {}, 'Argument 1 of LOG must be a positive number in LOG(-1)', 'LOG negative');
+      testFormulaError('LOG()', {}, 'Not enough arguments 0/1 in LOG()', 'LOG no arguments');
+      testFormulaError('LOG(1, 2)', {}, 'Too many arguments 2/1 in LOG(1, 2)', 'LOG too many arguments');
+    });
+
+    // MAX
+    describe('MAX', () => {
+      testFormula('MAX(1, 2, 3)', {}, 3, 'MAX three numbers');
+      testFormula('MAX(10, 0, -10)', {}, 10, 'MAX positive, zero, negative');
+      testFormula('MAX(5)', {}, 5, 'MAX single number');
+      testFormula('MAX(10, 5, 20, 1)', {}, 20, 'MAX multiple numbers');
+      testFormulaError('MAX(5, "text")', {}, 'Argument 2 of MAX must be a number in MAX(5, "text")', 'MAX text input');
+      testFormulaError('MAX("text", 5)', {}, 'Argument 1 of MAX must be a number in MAX("text", 5)', 'MAX text input first');
+      testFormulaError('MAX()', {}, 'Not enough arguments 0/1 in MAX()', 'MAX no arguments');
+    });
+
+    // MCEILING
+    describe('MCEILING', () => {
+      testFormula('MCEILING(5.7)', {}, 6, 'MCEILING positive number');
+      testFormula('MCEILING(5.2)', {}, 6, 'MCEILING positive number');
+      testFormula('MCEILING(-5.7)', {}, -5, 'MCEILING negative number');
+      testFormula('MCEILING(-5.2)', {}, -5, 'MCEILING negative number');
+      testFormula('MCEILING(5)', {}, 5, 'MCEILING integer');
+      testFormulaError('MCEILING("text")', {}, 'Argument 1 of MCEILING must be a number in MCEILING("text")', 'MCEILING text input');
+      testFormulaError('MCEILING()', {}, 'Not enough arguments 0/1 in MCEILING()', 'MCEILING no arguments');
+      testFormulaError('MCEILING(1, 2)', {}, 'Too many arguments 2/1 in MCEILING(1, 2)', 'MCEILING too many arguments');
+    });
+
+    // MFLOOR
+    describe('MFLOOR', () => {
+      testFormula('MFLOOR(5.7)', {}, 5, 'MFLOOR positive number');
+      testFormula('MFLOOR(5.2)', {}, 5, 'MFLOOR positive number');
+      testFormula('MFLOOR(-5.7)', {}, -6, 'MFLOOR negative number');
+      testFormula('MFLOOR(-5.2)', {}, -6, 'MFLOOR negative number');
+      testFormula('MFLOOR(5)', {}, 5, 'MFLOOR integer');
+      testFormulaError('MFLOOR("text")', {}, 'Argument 1 of MFLOOR must be a number in MFLOOR("text")', 'MFLOOR text input');
+      testFormulaError('MFLOOR()', {}, 'Not enough arguments 0/1 in MFLOOR()', 'MFLOOR no arguments');
+      testFormulaError('MFLOOR(1, 2)', {}, 'Too many arguments 2/1 in MFLOOR(1, 2)', 'MFLOOR too many arguments');
+    });
+
+    // MIN
+    describe('MIN', () => {
+      testFormula('MIN(1, 2, 3)', {}, 1, 'MIN three numbers');
+      testFormula('MIN(10, 0, -10)', {}, -10, 'MIN positive, zero, negative');
+      testFormula('MIN(5)', {}, 5, 'MIN single number');
+      testFormula('MIN(10, 5, 20, 1)', {}, 1, 'MIN multiple numbers');
+      testFormulaError('MIN(5, "text")', {}, 'Argument 2 of MIN must be a number in MIN(5, "text")', 'MIN text input');
+      testFormulaError('MIN("text", 5)', {}, 'Argument 1 of MIN must be a number in MIN("text", 5)', 'MIN text input first');
+      testFormulaError('MIN()', {}, 'Not enough arguments 0/1 in MIN()', 'MIN no arguments');
+    });
+
+    // MOD
+    describe('MOD', () => {
+      testFormula('MOD(10, 3)', {}, 1, 'MOD 10, 3');
+      testFormula('MOD(10, -3)', {}, 1, 'MOD 10, -3 (JS behavior)');
+      testFormula('MOD(-10, 3)', {}, -1, 'MOD -10, 3 (JS behavior)');
+      testFormula('MOD(-10, -3)', {}, -1, 'MOD -10, -3 (JS behavior)');
+      testFormula('MOD(10, 10)', {}, 0, 'MOD 10, 10');
+      testFormulaError('MOD(10, 0)', {}, 'Argument 2 of MOD cannot be zero in MOD(10, 0)', 'MOD divisor zero');
+      testFormulaError('MOD("text", 3)', {}, 'Argument 1 of MOD must be a number in MOD("text", 3)', 'MOD text input for arg1');
+      testFormulaError('MOD(10, "text")', {}, 'Argument 2 of MOD must be a number in MOD(10, "text")', 'MOD text input for arg2');
+      testFormulaError('MOD()', {}, 'Not enough arguments 0/2 in MOD()', 'MOD no arguments');
+      testFormulaError('MOD(1)', {}, 'Not enough arguments 1/2 in MOD(1)', 'MOD one argument');
+      testFormulaError('MOD(1, 2, 3)', {}, 'Too many arguments 3/2 in MOD(1, 2, 3)', 'MOD too many arguments');
+    });
+
+    // PI
+    describe('PI', () => {
+      testFormula('PI()', {}, Math.PI, 'PI');
+      testFormulaError('PI(1)', {}, 'Too many arguments 1/0 in PI(1)', 'PI with argument');
+    });
+
+    // ROUND
+    describe('ROUND', () => {
+      testFormula('ROUND(3.14159, 2)', {}, 3.14, 'ROUND 3.14159 to 2 digits');
+      testFormula('ROUND(3.14159, 0)', {}, 3, 'ROUND 3.14159 to 0 digits');
+      testFormula('ROUND(12345.67, -2)', {}, 12300, 'ROUND 12345.67 to -2 digits');
+      testFormula('ROUND(3.5, 0)', {}, 4, 'ROUND 3.5 to 0 digits (round half up)');
+      testFormula('ROUND(2.5, 0)', {}, 3, 'ROUND 2.5 to 0 digits (JS Math.round behavior - round half towards +Infinity)'); // Math.round(2.5) is 3
+      testFormula('ROUND(1.2345, 8)', {}, 1.2345, 'ROUND 1.2345 to 8 digits');
+      testFormula('ROUND(2.7,0)', {}, 3, 'ROUND 2.7 to 0 digits');
+      testFormula('ROUND(2.499,0)', {}, 2, 'ROUND 2.499 to 0 digits');
+      testFormula('ROUND(123.456, -1)', {}, 120, 'ROUND 123.456 to -1 digits');
+      testFormulaError('ROUND("text", 2)', {}, 'Argument 1 of ROUND must be a number in ROUND("text", 2)', 'ROUND text input for arg1');
+      testFormulaError('ROUND(3.14, "text")', {}, 'Argument 2 of ROUND must be a number in ROUND(3.14, "text")', 'ROUND text input for arg2');
+      testFormulaError('ROUND(3.14, 1.5)', {}, 'Argument 2 of ROUND must be an integer in ROUND(3.14, 1.5)', 'ROUND non-integer num_digits');
+      testFormulaError('ROUND()', {}, 'Not enough arguments 0/2 in ROUND()', 'ROUND no arguments');
+      testFormulaError('ROUND(1)', {}, 'Not enough arguments 1/2 in ROUND(1)', 'ROUND one argument');
+      testFormulaError('ROUND(1, 2, 3)', {}, 'Too many arguments 3/2 in ROUND(1, 2, 3)', 'ROUND too many arguments');
+    });
+
+    // SIN
+    describe('SIN', () => {
+      testFormula('SIN(0)', {}, 0, 'SIN 0');
+      testFormula('SIN(PI()/2)', {}, 1, 'SIN PI/2');
+      testFormula('SIN(PI())', {}, Math.sin(Math.PI), 'SIN PI (close to 0)');
+      testFormulaError('SIN("text")', {}, 'Argument 1 of SIN must be a number in SIN("text")', 'SIN text input');
+      testFormulaError('SIN()', {}, 'Not enough arguments 0/1 in SIN()', 'SIN no arguments');
+      testFormulaError('SIN(1, 2)', {}, 'Too many arguments 2/1 in SIN(1, 2)', 'SIN too many arguments');
+    });
+
+    // SQRT
+    describe('SQRT', () => {
+      testFormula('SQRT(9)', {}, 3, 'SQRT 9');
+      testFormula('SQRT(2)', {}, Math.SQRT2, 'SQRT 2');
+      testFormula('SQRT(0)', {}, 0, 'SQRT 0');
+      testFormulaError('SQRT(-1)', {}, 'Argument 1 of SQRT must be a non-negative number in SQRT(-1)', 'SQRT negative');
+      testFormulaError('SQRT("text")', {}, 'Argument 1 of SQRT must be a number in SQRT("text")', 'SQRT text input');
+      testFormulaError('SQRT()', {}, 'Not enough arguments 0/1 in SQRT()', 'SQRT no arguments');
+      testFormulaError('SQRT(1, 2)', {}, 'Too many arguments 2/1 in SQRT(1, 2)', 'SQRT too many arguments');
+    });
+
+    // TAN
+    describe('TAN', () => {
+      testFormula('TAN(0)', {}, 0, 'TAN 0');
+      testFormula('TAN(PI()/4)', {}, Math.tan(Math.PI/4), 'TAN PI/4 (close to 1)'); // Using Math.tan for precision
+      testFormula('TAN(PI()/2)', {}, Math.tan(Math.PI/2), 'TAN PI/2 (large number)');
+      testFormulaError('TAN("text")', {}, 'Argument 1 of TAN must be a number in TAN("text")', 'TAN text input');
+      testFormulaError('TAN()', {}, 'Not enough arguments 0/1 in TAN()', 'TAN no arguments');
+      testFormulaError('TAN(1, 2)', {}, 'Too many arguments 2/1 in TAN(1, 2)', 'TAN too many arguments');
+    });
+
+    // TRUNC
+    describe('TRUNC', () => {
+      testFormula('TRUNC(8.9)', {}, 8, 'TRUNC positive');
+      testFormula('TRUNC(-8.9)', {}, -8, 'TRUNC negative');
+      testFormula('TRUNC(12.345, 1)', {}, 12.3, 'TRUNC positive with num_digits');
+      testFormula('TRUNC(12.345, 0)', {}, 12, 'TRUNC positive with 0 num_digits');
+      testFormula('TRUNC(12.999, 2)', {}, 12.99, 'TRUNC positive with num_digits, no rounding');
+      testFormula('TRUNC(123.456, -1)', {}, 120, 'TRUNC positive with negative num_digits');
+      testFormula('TRUNC(123.456, -2)', {}, 100, 'TRUNC positive with large negative num_digits');
+      testFormula('TRUNC(-123.456, -1)', {}, -120, 'TRUNC negative with negative num_digits');
+      testFormula('TRUNC(-123.456, -2)', {}, -100, 'TRUNC negative with large negative num_digits');
+      testFormula('TRUNC(456.123, -3)', {}, 0, 'TRUNC to zero');
+      testFormula('TRUNC(-456.123, -3)', {}, -0, 'TRUNC to zero negative');
+      testFormula('TRUNC(1.23)', {}, 1, 'TRUNC with one argument'); // num_digits defaults to 0
+      testFormulaError('TRUNC("text")', {}, 'Argument 1 of TRUNC must be a number in TRUNC("text")', 'TRUNC text input for arg1');
+      testFormulaError('TRUNC(12.3, "text")', {}, 'Argument 2 of TRUNC must be a number in TRUNC(12.3, "text")', 'TRUNC text input for arg2');
+      testFormulaError('TRUNC(12.3, 1.5)', {}, 'Argument 2 of TRUNC must be an integer in TRUNC(12.3, 1.5)', 'TRUNC non-integer num_digits');
+      testFormulaError('TRUNC()', {}, 'Not enough arguments 0/1 in TRUNC()', 'TRUNC no arguments');
+      testFormulaError('TRUNC(1, 2, 3)', {}, 'Too many arguments 3/2 in TRUNC(1, 2, 3)', 'TRUNC too many arguments');
+    });
+  });
 });

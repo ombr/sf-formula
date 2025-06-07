@@ -16,7 +16,19 @@ export const completionList: CompletionType[]= [
   },
   {
     label: 'BLANKVALUE',
-    apply: snippet(`BLANKVALUE(\${value1}, \${value2})`),
+    apply: snippet(`BLANKVALUE(\${value}, \${"Default"})`),
+  },
+  {
+    label: 'NULLVALUE',
+    apply: snippet(`BLANKVALUE(\${value}, \${"Default"})`),
+  },
+  {
+    label: 'ISNULL',
+    apply: snippet(`ISNULL(\${value})`),
+  },
+  {
+    label: 'ISNUMBER',
+    apply: snippet(`ISNULL(\${value})`),
   },
   {
     label: 'TEXT',
