@@ -662,3 +662,13 @@ describe('formula_eval', () => {
     });
   });
 });
+
+
+
+/*
+Errors:
+
+-PI()
+IF(12=, "OK", "KO")
+
+*/

@@ -1,18 +1,45 @@
 import {completeFromList, snippet, type Completion as CompletionType } from "@codemirror/autocomplete"
 import { formulaLanguage } from './language';
 
+const singleArg = ['NOT', 'ABS', 'ACOS', 'ASIN', 'SIN', 'TAN', 'ATAN', 'ATAN2', 'EXP', 'LN', 'LOG', 'ISNUMBER','ISBLANK', 'ISNULL', 'TEXT','FLOOR', 'CEILING', 'LEN', 'MCEILING', 'MFLOOR', 'SQRT'].map((func)=> {
+  return {
+    label: func,
+    apply: snippet(`${func}(\${value})`),
+  };
+})
 export const completionList: CompletionType[]= [
   {
-    label: 'if',
-    apply: snippet(`IF(\${true}, \${"ok"}, \${"ko"})`),
+    label: 'IF',
+    apply: snippet(`IF(\n\t\${true},\n\t\${"ok"},\n\t\${"ko"}\n)`),
   },
   {
-    label: 'ISBLANK',
-    apply: snippet(`ISBLANK(\${value})`),
+    label: 'CASE',
+    apply: snippet(`CASE(\n\t\${value},\n\t\${true}, \${"ok"},\n\t\${false},\${"KO"}\n)`),
   },
+  {
+    label: 'MIN',
+    apply: snippet(`MIN(\${0:value}, \${1:0})`),
+  },
+  {
+    label: 'MAX',
+    apply: snippet(`MAX(\${0:value}, \${1:0})`),
+  },
+  ...singleArg,
   {
     label: 'NOT',
     apply: snippet(`NOT(\${value})`),
+  },
+  {
+    label: 'ROUND',
+    apply: snippet(`ROUND(\${value}, \${2})`),
+  },
+  {
+    label: 'TRUNC',
+    apply: snippet(`TRUNC(\${value}, \${2})`),
+  },
+  {
+    label: 'ROUND',
+    apply: snippet(`ROUND(\${value}, \${2})`),
   },
   {
     label: 'BLANKVALUE',
@@ -21,14 +48,6 @@ export const completionList: CompletionType[]= [
   {
     label: 'NULLVALUE',
     apply: snippet(`BLANKVALUE(\${value}, \${"Default"})`),
-  },
-  {
-    label: 'ISNULL',
-    apply: snippet(`ISNULL(\${value})`),
-  },
-  {
-    label: 'ISNUMBER',
-    apply: snippet(`ISNULL(\${value})`),
   },
   {
     label: 'TEXT',
