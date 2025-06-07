@@ -392,4 +392,17 @@ describe('formula_eval', () => {
     testFormulaError('ISNUMBER(1,2)', {}, 'Too many arguments 2/1 in ISNUMBER(1,2)', 'ISNUMBER too many arguments');
     // testFormula('ISNUMBER(DATE(2023,1,1))', {}, false, 'ISNUMBER Date object');
   });
+  describe('ISNULL', () => {
+    testFormula('ISNULL(NullVar)', {NullVar: null}, true, 'ISNULL null variable');
+    testFormula('ISNULL(NotDefined)', {}, true, 'ISNULL undefined variable');
+    testFormula('ISNULL("")', {}, false, 'ISNULL empty string');
+    testFormula('ISNULL("text")', {}, false, 'ISNULL string');
+    testFormula('ISNULL(0)', {}, false, 'ISNULL zero');
+    testFormula('ISNULL(1)', {}, false, 'ISNULL number');
+    testFormula('ISNULL(BLANKVALUE("", 1))', {}, false, 'ISNULL BLANKVALUE returns 1 (not null)');
+    testFormula('ISNULL(BLANKVALUE(null, "a"))', {}, false, 'ISNULL BLANKVALUE returns "a" (not null)');
+    testFormula('ISNULL(Name)', {Name: 'John'}, false, 'ISNULL Name="John"');
+    testFormulaError('ISNULL()', {}, 'Not enough arguments 0/1 in ISNULL()', 'ISNULL no arguments');
+    testFormulaError('ISNULL(1,2)', {}, 'Too many arguments 2/1 in ISNULL(1,2)', 'ISNULL too many arguments');
+  });
 });

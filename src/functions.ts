@@ -94,4 +94,9 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     // Booleans, objects, null, undefined are not numbers for ISNUMBER
     return false;
   },
+  'ISNULL': (...args: Array<() => unknown>) => {
+    const [exprArg] = validateArgs(args, {min: 1, max: 1});
+    const expr = exprArg();
+    return expr === null || expr === undefined;
+  },
 }
