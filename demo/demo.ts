@@ -1,7 +1,7 @@
 import { formulaEval, languagePack, html} from '../src/formula';
 import { extractVariables } from '../src/extractVariables';
 import { EditorView, basicSetup } from 'codemirror';
-import { EditorState, Compartment } from '@codemirror/state';
+import { EditorState } from '@codemirror/state';
 import { jsonParseLinter } from '@codemirror/lang-json';
 import { linter } from '@codemirror/lint';
 import { json } from '@codemirror/lang-json';
@@ -42,7 +42,6 @@ class FormulaDemo {
 
     private initializeCodeMirror(): void {
         this.inputContainer.innerHTML = '';
-    const languageConf = new Compartment();
         const startState = EditorState.create({
             doc: this.formula,
             extensions: [
