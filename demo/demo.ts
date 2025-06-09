@@ -110,7 +110,7 @@ class FormulaDemo {
         this.evaluateFormula();
     }
 
-    private showResult(result: any, formula: string, variables: string[]): void {
+    private showResult(result: unknown, formula: string, variables: string[]): void {
         const resultType = typeof result;
         const displayResult = this.formatResult(result);
         
@@ -132,7 +132,7 @@ class FormulaDemo {
         `;
     }
 
-    private formatResult(result: any): string {
+    private formatResult(result: unknown): string {
         if (typeof result === 'string') {
             return `"${result}"`;
         } else if (typeof result === 'number') {
@@ -174,8 +174,14 @@ function loadExample(example: string): void {
 }
 
 // Make functions available globally
-(window as any).evaluateFormula = evaluateFormula;
-(window as any).loadExample = loadExample;
+(window as typeof window & {
+    evaluateFormula: typeof evaluateFormula;
+    loadExample: typeof loadExample;
+}).evaluateFormula = evaluateFormula;
+(window as typeof window & {
+    evaluateFormula: typeof evaluateFormula;
+    loadExample: typeof loadExample;
+}).loadExample = loadExample;
 
 // Initialize the demo when the page loads
 document.addEventListener('DOMContentLoaded', () => {
