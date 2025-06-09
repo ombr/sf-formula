@@ -1,10 +1,11 @@
-import { formulaEval, languagePack, html } from 'sf-formula';
+import { formulaEval, languagePack, html} from '../src/formula';
+import { extractVariables } from '../src/extractVariables';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState, Compartment } from '@codemirror/state';
-import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { jsonParseLinter } from '@codemirror/lang-json';
 import { linter } from '@codemirror/lint';
 import { json } from '@codemirror/lang-json';
+import { oneDark as theme } from '@codemirror/theme-one-dark';
 
 class FormulaDemo {
     private resultDiv: HTMLElement;
@@ -47,7 +48,7 @@ class FormulaDemo {
             extensions: [
                 basicSetup,
                 languagePack(),
-                syntaxHighlighting(defaultHighlightStyle),
+                theme,
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
                         this.formula = this.editorView.state.doc.toString().trim();
@@ -62,6 +63,7 @@ class FormulaDemo {
             extensions: [
                 basicSetup,
                 json(),
+                theme,
                 linter(jsonParseLinter()),
                 EditorView.updateListener.of((update) => {
                     if (update.docChanged) {
@@ -90,7 +92,7 @@ class FormulaDemo {
     evaluateFormula(): void {
         try {
             const result = formulaEval(this.formula, this.demoVariables);
-            this.showResult(result, this.formula);
+            this.showResult(result, this.formula, extractVariables(this.formula));
         } catch (error) {
             this.showError(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
@@ -109,7 +111,7 @@ class FormulaDemo {
         this.evaluateFormula();
     }
 
-    private showResult(result: any, formula: string): void {
+    private showResult(result: any, formula: string, variables: string[]): void {
         const resultType = typeof result;
         const displayResult = this.formatResult(result);
         
@@ -117,7 +119,8 @@ class FormulaDemo {
             <div class="result">
                 <strong>Result:</strong> <code>${this.escapeHtml(displayResult)}</code><br>
                 <strong>Type:</strong> <span style="color: #666; font-size: 0.9em;">${resultType}</span><br>
-                <strong>Formula:</strong> <code>${html(formula)}</code>
+                <strong>Formula:</strong> <code>${html(formula)}</code></br>
+                <strong>Variables listed in the formula:</strong> <code>${variables.join(", ")}</code>
             </div>
         `;
     }

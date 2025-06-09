@@ -14,9 +14,12 @@ module.exports = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
-        alias: {
-          '@codemirror/state': require.resolve('@codemirror/state')
-        }
+        /* alias: {
+            '@codemirror/state': require.resolve('@codemirror/state'),
+            'lezer-common': require.resolve('@lezer/common'),
+            'lezer-highlight': require.resolve('@lezer/highlight'),
+            'lezer-lr': require.resolve('@lezer/lr'),
+        } */
     },
     output: {
         filename: 'demo.js',

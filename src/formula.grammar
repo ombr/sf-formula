@@ -8,25 +8,28 @@ AddExpr { MulExpr (AddOperator MulExpr)* }
 MulExpr { Term (MulOperator Term)* }
 Term { Number | String | Boolean | Function | parenExpr | Variable }
 parenExpr { "(" expr ")" }
-Variable { VariableField ("." VariableField)* }
-VariableField { Identifier }
-Function { Identifier "(" (expr ("," expr)*)? ")" }
+Variable { VariableName ("." VariableAttribute)* }
+VariableName { identifier }
+VariableAttribute { identifier }
+Function { FunctionName "(" (expr ("," expr)*)? ")" }
+FunctionName { identifier }
+String { string }
 
 @skip { space }
 
 @tokens {
   space { @whitespace+ }
   Number { "-"? $[0-9]+ ("." $[0-9]+)? }
-  String { '"' !["]* '"' }
   Boolean { "true" | "false" }
   AddOperator { "+" | "-" | "&" }
   MulOperator { "*" | "/" }
   CompOperator { "<" | ">" | "==" | ">=" | "<=" | "!=" | "<>" | "=" }
   AndOperator { "&&" | "AND" }
   OrOperator { "||" | "OR" }
-  Identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
-  @precedence {Boolean, Identifier}
+  identifier { $[A-Za-z_] $[A-Za-z0-9_]* }
+  @precedence {Boolean, identifier}
   end { @eof }
+  string { '"' !["]* '"' }
 }
 
 @external propSource formulaHighlight from "./highlight"
