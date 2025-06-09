@@ -10,6 +10,34 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ["dist", ".commitlintrc.js", "coverage", ".config/*", "jest.config.js", "src/parser.ts"]
+    files: ["**/*.test.{js,ts}", "test/**/*", "**/test/**/*"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.jest
+      }
+    }
+  },
+  {
+    files: ["**/*.config.{js,mjs}", "rollup.config.js", "jest.config.js", ".commitlintrc.js", "demo/webpack.config.js"],
+    languageOptions: {
+      globals: {
+        ...globals.node
+      }
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+      "no-undef": "off"
+    }
+  },
+  {
+    ignores: [
+      "dist/**/*",
+      "**/dist/**/*",
+      "coverage/**/*",
+      "src/parser.ts",
+      "types/parser.terms.d.ts",
+      "**/*.d.ts"
+    ]
   }
 ];
