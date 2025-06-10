@@ -29,12 +29,11 @@
   "author": "Luc Boissaye",
   "license": "MIT",
   "dependencies": {
-    "@codemirror/language": "^6.0.0",
-    "@lezer/common": "^1.2.3",
-    "@lezer/highlight": "^1.0.0",
-    "@lezer/lr": "^1.0.0"
   },
   "devDependencies": {
+    "@lezer/common": "^1.2.3",
+    "@lezer/highlight": "^1.0.0",
+    "@lezer/lr": "^1.0.0",
     "@codemirror/autocomplete": "^6.10.2",
     "@codemirror/buildhelper": "^1.0.0",
     "@codemirror/commands": "^6.3.0",
