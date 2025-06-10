@@ -7,7 +7,7 @@ const singleArg = ['NOT', 'ABS', 'ACOS', 'ASIN', 'SIN', 'TAN', 'ATAN', 'ATAN2', 
     apply: snippet(`${func}(\${value})`),
   };
 })
-export const functions = [
+export const functions: CompletionType[] = [
   ...singleArg,
   {
     label: 'IF',
@@ -48,14 +48,14 @@ export const functions = [
   },
 ]
 
-export const operators = '> < >= <= & + - * / AND OR'.split(' ').map((operator) => {
+export const operators: CompletionType[] = '> < >= <= & + - * / AND OR'.split(' ').map((operator) => {
     return {
     label: operator,
     apply: snippet(`\${value} ${operator} \${value}`),
   }}
 );
 
-export const values = [
+export const values: CompletionType[] = [
   {
     label: 'true',
     apply: `true`,
