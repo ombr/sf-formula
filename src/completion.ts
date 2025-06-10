@@ -7,7 +7,8 @@ const singleArg = ['NOT', 'ABS', 'ACOS', 'ASIN', 'SIN', 'TAN', 'ATAN', 'ATAN2', 
     apply: snippet(`${func}(\${value})`),
   };
 })
-export const completionList: CompletionType[]= [
+export const functions = [
+  ...singleArg,
   {
     label: 'IF',
     apply: snippet(`IF(\n\t\${true},\n\t\${"ok"},\n\t\${"ko"}\n)`),
@@ -16,6 +17,7 @@ export const completionList: CompletionType[]= [
     label: 'CASE',
     apply: snippet(`CASE(\n\t\${value},\n\t\${true}, \${"ok"},\n\t\${false},\${"KO"}\n)`),
   },
+  ...singleArg,
   {
     label: 'MIN',
     apply: snippet(`MIN(\${0:value}, \${1:0})`),
@@ -23,11 +25,6 @@ export const completionList: CompletionType[]= [
   {
     label: 'MAX',
     apply: snippet(`MAX(\${0:value}, \${1:0})`),
-  },
-  ...singleArg,
-  {
-    label: 'NOT',
-    apply: snippet(`NOT(\${value})`),
   },
   {
     label: 'ROUND',
@@ -49,22 +46,16 @@ export const completionList: CompletionType[]= [
     label: 'NULLVALUE',
     apply: snippet(`BLANKVALUE(\${value}, \${"Default"})`),
   },
-  {
-    label: 'TEXT',
-    apply: snippet(`TEXT(\${12})`),
-  },
-  {
-    label: 'FLOOR',
-    apply: snippet(`FLOOR(\${12.12})`),
-  },
-  {
-    label: 'CEILING',
-    apply: snippet(`CEILING(\${12.12})`),
-  },
-  {
-    label: 'LEN',
-    apply: snippet(`LEN(\${"Text"})`),
-  },
+]
+
+export const operators = '> < >= <= & + - * / AND OR'.split(' ').map((operator) => {
+    return {
+    label: operator,
+    apply: snippet(`\${value} ${operator} \${value}`),
+  }}
+);
+
+export const values = [
   {
     label: 'true',
     apply: `true`,
@@ -73,7 +64,20 @@ export const completionList: CompletionType[]= [
     label: 'false',
     apply: `false`,
   },
+  {
+    label: 'String',
+    apply: snippet(`"\${Hello World}"`),
+  },
+  {
+    label: 'Number',
+    apply: snippet(`"\${12}"`),
+  }
+]
 
+export const completionList: CompletionType[]= [
+  ...functions,
+  ...operators,
+  ...values,
 ]
 export const Completion = formulaLanguage.data.of({
   autocomplete: completeFromList(completionList)
