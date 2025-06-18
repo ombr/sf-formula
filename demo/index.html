@@ -7,17 +7,41 @@
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
             line-height: 1.6;
             background-color: #f5f5f5;
+            min-height: 100vh;
         }
         .container {
+            width: 100%;
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .left-panel {
             background: white;
-            padding: 30px;
+            padding: 10px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .right-panel {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
         }
         h1 {
             color: #333;
@@ -25,8 +49,8 @@
             margin-bottom: 30px;
         }
         .demo-section {
-            margin: 20px 0;
-            padding: 20px;
+            margin: 5px 0;
+            padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
             background-color: #fafafa;
@@ -62,7 +86,7 @@
         button {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 10px 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -93,7 +117,7 @@
         .variables-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
+            gap: 5px;
             font-family: monospace;
             font-size: 14px;
         }
@@ -134,46 +158,50 @@
     </style>
 </head>
 <body>
+    <h1>SF Formula Demo</h1>
     <div class="container">
-        <h1>SF Formula Demo</h1>
-        
-        <div class="demo-section">
-            <h3>Formula Parser & Evaluator</h3>
-            <p>Enter a formula to see it parsed and evaluated using the sf-formula library:</p>
-            <div id="formulaInputContainer"> x + y </div>
-            <div id="result"></div>
+        <!-- Left Panel: Formula Parser & Evaluator -->
+        <div class="left-panel">
+            <div class="demo-section">
+                <h3>Formula Parser & Evaluator</h3>
+                <p>Enter a formula to see it parsed and evaluated using the sf-formula library:</p>
+                <div id="formulaInputContainer"> x + y </div>
+                <div id="result"></div>
+            </div>
         </div>
 
-        <div class="demo-section">
-            <h3>Example Formulas</h3>
-            <p>Click on any example to try it:</p>
-            
-            <h4>Basic Arithmetic:</h4>
-            <button class="example-button" onclick="loadExample('x + y')">x + y</button>
-            <button class="example-button" onclick="loadExample('x * y + 10')">x * y + 10</button>
-            <button class="example-button" onclick="loadExample('(x + y) * 2')">(x + y) * 2</button>
-            <button class="example-button" onclick="loadExample('PI * 2')">PI * 2</button>
-            
-            <h4>Logical Operations:</h4>
-            <button class="example-button" onclick="loadExample('x > y')">x > y</button>
-            <button class="example-button" onclick="loadExample('isActive AND x > 5')">isActive AND x > 5</button>
-            <button class="example-button" onclick="loadExample('x > 5 OR y < 3')">x > 5 OR y < 3</button>
-            
-            <h4>String Operations:</h4>
-            <button class="example-button" onclick="loadExample('&quot;Hello &quot; + name')">"Hello " + name</button>
-            <button class="example-button" onclick="loadExample('firstName + &quot; &quot; + lastName')">firstName + " " + lastName</button>
-            <button class="example-button" onclick="loadExample('name = &quot;John&quot;')">name = "John"</button>
-            
-            <h4>Numbers & Advanced:</h4>
-            <button class="example-button" onclick="loadExample('42')">42</button>
-            <button class="example-button" onclick="loadExample('3.14159')">3.14159</button>
-            <button class="example-button" onclick="loadExample('-10')">-10</button>
-            <button class="example-button" onclick="loadExample('age >= 18 AND balance > 1000')">age >= 18 AND balance > 1000</button>
-        </div>
+        <!-- Right Panel: Variables and Examples -->
+        <div class="right-panel">
+            <div class="variables-section">
+                <h4>Available Variables:</h4>
+                <div id="formulaVariables"></div>
+            </div>
+            <div class="demo-section">
+                <h3>Example Formulas</h3>
+                <p>Click on any example to try it:</p>
 
-        <div class="variables-section">
-            <h4>Available Variables:</h4>
-            <div id="formulaVariables"></div>
+                <h4>Basic Arithmetic:</h4>
+                <button class="example-button" onclick="loadExample('x + y')">x + y</button>
+                <button class="example-button" onclick="loadExample('x * y + 10')">x * y + 10</button>
+                <button class="example-button" onclick="loadExample('(x + y) * 2')">(x + y) * 2</button>
+                <button class="example-button" onclick="loadExample('PI * 2')">PI * 2</button>
+
+                <h4>Logical Operations:</h4>
+                <button class="example-button" onclick="loadExample('x > y')">x > y</button>
+                <button class="example-button" onclick="loadExample('isActive AND x > 5')">isActive AND x > 5</button>
+                <button class="example-button" onclick="loadExample('x > 5 OR y < 3')">x > 5 OR y < 3</button>
+
+                <h4>String Operations:</h4>
+                <button class="example-button" onclick="loadExample('&quot;Hello &quot; + name')">"Hello " + name</button>
+                <button class="example-button" onclick="loadExample('firstName + &quot; &quot; + lastName')">firstName + " " + lastName</button>
+                <button class="example-button" onclick="loadExample('name = &quot;John&quot;')">name = "John"</button>
+
+                <h4>Numbers & Advanced:</h4>
+                <button class="example-button" onclick="loadExample('42')">42</button>
+                <button class="example-button" onclick="loadExample('3.14159')">3.14159</button>
+                <button class="example-button" onclick="loadExample('-10')">-10</button>
+                <button class="example-button" onclick="loadExample('age >= 18 AND balance > 1000')">age >= 18 AND balance > 1000</button>
+            </div>
         </div>
     </div>
 
