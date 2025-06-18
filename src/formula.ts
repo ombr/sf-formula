@@ -4,6 +4,7 @@ import { parser } from "./language";
 import { html } from "./html";
 import Completion from "./completion";
 import languagePack from "./lang-pack";
+import { extractVariables } from "./extractVariables";
 
 export type Context = Record<string, unknown> | ((variables: string[]) => unknown);
 export type Functions = Record<string, (...args: Array<()=> unknown>)=> unknown>;
@@ -16,4 +17,4 @@ export function formulaEval(formula: string, context: Context = {}, options: Opt
   return evaluate(res, formula, context, options);
 }
 
-export { languagePack, parser, html, Completion, evaluate };
+export { languagePack, parser, html, Completion, evaluate, extractVariables };

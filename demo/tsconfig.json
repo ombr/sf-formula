@@ -8,12 +8,13 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": false,
     "declaration": false,
-    "outDir": "./dist",
+    "outDir": "./dist"
   },
   "include": [
     "**/*.ts",
