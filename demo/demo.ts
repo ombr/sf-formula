@@ -1,5 +1,4 @@
-import { formulaEval, languagePack, html} from '../src/formula';
-import { extractVariables } from '../src/extractVariables';
+import { formulaEval, languagePack, html, extractVariables } from 'sf-formula/src';
 import { EditorView, basicSetup } from 'codemirror';
 import { EditorState } from '@codemirror/state';
 import { jsonParseLinter } from '@codemirror/lang-json';
