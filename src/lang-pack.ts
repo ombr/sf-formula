@@ -4,7 +4,7 @@ import { formulaLanguage } from './language';
 import { Completion } from './completion';
 
 
-export function languagePack() {
+export default function languagePack() {
   return new LanguageSupport(formulaLanguage, [Completion])
 }
 export { parser };

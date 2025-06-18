@@ -79,6 +79,15 @@ export const completionList: CompletionType[]= [
   ...operators,
   ...values,
 ]
+
 export const Completion = formulaLanguage.data.of({
   autocomplete: completeFromList(completionList)
 })
+
+export default {
+  Completion,
+  completionList,
+  functions,
+  operators,
+  values,
+}
