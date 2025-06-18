@@ -4,6 +4,29 @@
   "description": "Formula evaluation engine",
   "main": "dist/formula.js",
   "types": "dist/formula.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/formula.js",
+      "require": "./dist/formula.js",
+      "types": "./dist/formula.d.ts"
+    },
+    "./src": {
+      "import": "./src/formula.ts",
+      "types": "./src/formula.ts"
+    },
+    "./core": {
+      "import": "./src/core.ts",
+      "types": "./src/core.ts"
+    },
+    "./parser": {
+      "import": "./src/language.ts",
+      "types": "./src/language.ts"
+    },
+    "./functions": {
+      "import": "./src/functions.ts",
+      "types": "./src/functions.ts"
+    }
+  },
   "scripts": {
     "test-luc": "cm-buildhelper src/formula.ts",
     "clean": "rimraf dist",
@@ -29,6 +52,21 @@
   "author": "Luc Boissaye",
   "license": "MIT",
   "dependencies": {
+  },
+  "peerDependencies": {
+    "@lezer/common": "^1.2.3",
+    "@lezer/highlight": "^1.0.0",
+    "@lezer/lr": "^1.0.0",
+    "@codemirror/autocomplete": "^6.10.2",
+    "@codemirror/language": "^6.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@codemirror/autocomplete": {
+      "optional": true
+    },
+    "@codemirror/language": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@lezer/common": "^1.2.3",
