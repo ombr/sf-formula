@@ -1,9 +1,9 @@
 import { evaluate } from "./evaluate";
 import { defaultFunctions } from "./functions";
 import { parser } from "./language";
-import { languagePack } from "./lang-pack";
 import { html } from "./html";
-export { languagePack, parser, html};
+import Completion from "./completion";
+import languagePack from "./lang-pack";
 
 export type Context = Record<string, unknown> | ((variables: string[]) => unknown);
 export type Functions = Record<string, (...args: Array<()=> unknown>)=> unknown>;
@@ -15,3 +15,5 @@ export function formulaEval(formula: string, context: Context = {}, options: Opt
   const res = parser.parse(formula);
   return evaluate(res, formula, context, options);
 }
+
+export { languagePack, parser, html, Completion, evaluate };
