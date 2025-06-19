@@ -17,7 +17,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
       } else {
         let value:unknown = context;
         for(const fieldName of variables) {
-          if( typeof value === 'object' && value !== null && !Object.hasOwn(value, fieldName)) return undefined;
+          if( typeof value === 'object' && value !== null && !Object.prototype.hasOwnProperty.call(value, fieldName)) return undefined;
           value = (value as Record<string, unknown>)[fieldName];
         }
         return value;
