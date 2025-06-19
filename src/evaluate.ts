@@ -1,6 +1,6 @@
 import { Tree, TreeCursor } from "@lezer/common";
 import { FormulaText, Number, MulExpr, String, Boolean, MulOperator, Term, AddOperator, Variable, Function, AddExpr, OrExpr, AndExpr, AndOperator, OrOperator, CompExpr, CompOperator } from "./parser.terms";
-import { Context, Options } from "./formula";
+import type { Context, Options } from "./formula";
 
 function evaluate(tree: Tree, input: string, context: Context = {}, options: Options = { functions: {}}): unknown {
   function evaluateNode(cursor: TreeCursor): unknown {
@@ -122,7 +122,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
                     value = value !== evaluateNode(cursor);
                     break;
                   default:
-                    throw new Error('Unknown operator');
+                    throw new Error('Unknown CompOperator');
                 }
                 break;
               case AndOperator:
@@ -150,7 +150,7 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
                     value -= right;
                     break;
                   default:
-                    throw new Error('Unknown operator' + text(cursor));
+                    throw new Error('Unknown AddOperator' + text(cursor));
                 }
                 break;
               case MulOperator:
@@ -165,15 +165,15 @@ function evaluate(tree: Tree, input: string, context: Context = {}, options: Opt
                     value = value / right;
                     break;
                   default:
-                    throw new Error('Unknown operator' + text(cursor));
+                    throw new Error('Unknown MulOperator' + text(cursor));
                 }
                 break;
               default:
-                throw new Error('Unknown operator' + text(cursor));
+                throw new Error('Unknown CompExpr' + text(cursor));
             }
           } else {
             const Operators = [OrOperator, AndOperator, MulOperator, AddOperator, CompOperator];
-            if(!(Operators.includes(cursor.type.id))) throw new Error(`Unknown operator ${cursor.type.name} ${text(cursor)}`);
+            if(!(Operators.includes(cursor.type.id))) throw new Error(`Unknown operator !! ${cursor.type.name} "${text(cursor)}"`);
             operator = {
               id: cursor.type.id,
               text: text(cursor),
