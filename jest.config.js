@@ -3,10 +3,10 @@ export default {
   extensionsToTreatAsEsm: ['.ts'],
   testEnvironment: 'node',
   testMatch: ['**/test/**/*.test.ts'],
-  globals: {
-    'ts-jest': {
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
       useESM: true
-    }
+    }]
   },
   /*collectCoverage: true,
   coverageDirectory: 'coverage',
