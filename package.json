@@ -2,6 +2,7 @@
   "name": "sf-formula",
   "version": "1.1.1",
   "description": "Formula evaluation engine",
+  "type": "module",
   "main": "dist/formula.js",
   "types": "dist/formula.d.ts",
   "exports": {
@@ -33,7 +34,7 @@
     "generate-parser": "lezer-generator src/formula.grammar -o src/parser.ts",
     "generate-parser-wip": "cm-buildhelper src/lang-formula.ts",
     "build": "npm run clean && npm run generate-parser && tsc -p tsconfig.json && npm install --prefix demo && npm run build --prefix demo",
-    "start": "npm run build && npm run dev --prefix demo",
+    "start": "npm run build && npm run start --prefix demo",
     "test": "npm run build && jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
@@ -51,14 +52,12 @@
   ],
   "author": "Luc Boissaye",
   "license": "MIT",
-  "dependencies": {
-  },
   "peerDependencies": {
     "@lezer/common": "^1.2.3",
-    "@lezer/highlight": "^1.0.0",
-    "@lezer/lr": "^1.0.0",
-    "@codemirror/autocomplete": "^6.10.2",
-    "@codemirror/language": "^6.0.0"
+    "@lezer/highlight": "^1.2.1",
+    "@lezer/lr": "^1.4.2",
+    "@codemirror/autocomplete": "^6.18.6",
+    "@codemirror/language": "^6.11.1"
   },
   "peerDependenciesMeta": {
     "@codemirror/autocomplete": {
@@ -73,14 +72,7 @@
     "@lezer/highlight": "^1.0.0",
     "@lezer/lr": "^1.0.0",
     "@codemirror/autocomplete": "^6.10.2",
-    "@codemirror/buildhelper": "^1.0.0",
-    "@codemirror/commands": "^6.3.0",
-    "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.0.0",
-    "@codemirror/search": "^6.5.4",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/theme-one-dark": "^6.1.2",
-    "@codemirror/view": "^6.37.1",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@eslint/js": "^9.21.0",

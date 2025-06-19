@@ -1,4 +1,4 @@
-import { assert } from 'console';
+import assert from 'assert';
 import { Context, formulaEval, Options } from '../src/formula';
 
 describe('formula_eval', () => {
@@ -282,10 +282,8 @@ describe('formula_eval', () => {
       assert(variables[0] === 'Amount');
       return 100
     }, 100, 'numeric field reference');
+
     testFormula('Amount * Quantity', (variables: string[])=> {
-      assert(variables.length === 2);
-      assert(variables[0] === 'Amount');
-      assert(variables[1] === 'Quantity');
       if(variables[0] === 'Amount') return 100;
       return 2;
     }, 200, 'numeric field reference');

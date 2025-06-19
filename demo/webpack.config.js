@@ -1,7 +1,11 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+import path from 'path';
+import HtmlWebpackPlugin from 'html-webpack-plugin';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
     entry: './demo.ts',
     module: {
         rules: [
@@ -14,12 +18,13 @@ module.exports = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
-        /* alias: {
-            '@codemirror/state': require.resolve('@codemirror/state'),
-            'lezer-common': require.resolve('@lezer/common'),
-            'lezer-highlight': require.resolve('@lezer/highlight'),
-            'lezer-lr': require.resolve('@lezer/lr'),
-        } */
+        alias: {
+          '@lezer/common': path.resolve(__dirname, 'node_modules/@lezer/common'),
+          '@lezer/highlight': path.resolve(__dirname, 'node_modules/@lezer/highlight'),
+          '@lezer/lr': path.resolve(__dirname, 'node_modules/@lezer/lr'),
+          '@codemirror/autocomplete': path.resolve(__dirname, 'node_modules/@codemirror/autocomplete'),
+          '@codemirror/language': path.resolve(__dirname, 'node_modules/@codemirror/language')
+        }
     },
     output: {
         filename: 'demo.js',
