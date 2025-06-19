@@ -34,7 +34,7 @@
     "generate-parser": "lezer-generator src/formula.grammar -o src/parser.ts",
     "generate-parser-wip": "cm-buildhelper src/lang-formula.ts",
     "build": "npm run clean && npm run generate-parser && tsc -p tsconfig.json && npm install --prefix demo && npm run build --prefix demo",
-    "start": "npm run build && npm run dev --prefix demo",
+    "start": "npm run build && npm run start --prefix demo",
     "test": "npm run build && jest",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
@@ -54,10 +54,10 @@
   "license": "MIT",
   "peerDependencies": {
     "@lezer/common": "^1.2.3",
-    "@lezer/highlight": "^1.0.0",
-    "@lezer/lr": "^1.0.0",
-    "@codemirror/autocomplete": "^6.10.2",
-    "@codemirror/language": "^6.0.0"
+    "@lezer/highlight": "^1.2.1",
+    "@lezer/lr": "^1.4.2",
+    "@codemirror/autocomplete": "^6.18.6",
+    "@codemirror/language": "^6.11.1"
   },
   "peerDependenciesMeta": {
     "@codemirror/autocomplete": {
