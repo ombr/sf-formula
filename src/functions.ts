@@ -268,4 +268,21 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       return Math.trunc(number / factor) * factor;
     }
   },
+  'REGEX': (...args: Array<() => unknown>) => {
+    const [textArg, patternArg] = validateArgs(args, {min: 2, max: 2});
+    const text = computeArg(textArg);
+    const pattern = computeArg(patternArg);
+    
+    if(typeof text !== 'string') throw new Error('Argument 1 of REGEX must be a string');
+    if(typeof pattern !== 'string') throw new Error('Argument 2 of REGEX must be a string');
+    
+    try {
+      // Handle Salesforce-style escaped backslashes: convert \\ to \
+      const processedPattern = pattern.replace(/\\\\/g, '\\');
+      const regex = new RegExp(processedPattern);
+      return regex.test(text);
+    } catch (error) {
+      throw new Error(`Invalid regular expression pattern: ${pattern}`);
+    }
+  },
 }

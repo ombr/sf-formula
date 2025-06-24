@@ -659,6 +659,102 @@ describe('formula_eval', () => {
       testFormulaError('TRUNC(1, 2, 3)', {}, 'Too many arguments 3/2 in TRUNC(1, 2, 3)', 'TRUNC too many arguments');
     });
   });
+
+  describe('REGEX', () => {
+    // Basic pattern matching
+    testFormula('REGEX("Hello", "Hello")', {}, true, 'REGEX exact match');
+    testFormula('REGEX("Hello", "hello")', {}, false, 'REGEX case sensitive');
+    testFormula('REGEX("Hello World", "Hello")', {}, true, 'REGEX partial match');
+    testFormula('REGEX("Hello World", "World")', {}, true, 'REGEX partial match end');
+    testFormula('REGEX("Hello", "World")', {}, false, 'REGEX no match');
+    
+    // Character classes and ranges
+    testFormula('REGEX("abc", "[a-z]+")', {}, true, 'REGEX lowercase letters');
+    testFormula('REGEX("ABC", "[A-Z]+")', {}, true, 'REGEX uppercase letters');
+    testFormula('REGEX("123", "[0-9]+")', {}, true, 'REGEX digits');
+    testFormula('REGEX("123", "\\\\d+")', {}, true, 'REGEX digit shorthand');
+    testFormula('REGEX("Hello123", "[a-zA-Z0-9]+")', {}, true, 'REGEX alphanumeric');
+    
+    // Quantifiers
+    testFormula('REGEX("a", "a?")', {}, true, 'REGEX zero or one');
+    testFormula('REGEX("", "a?")', {}, true, 'REGEX zero matches');
+    testFormula('REGEX("aaa", "a*")', {}, true, 'REGEX zero or more');
+    testFormula('REGEX("aaa", "a+")', {}, true, 'REGEX one or more');
+    testFormula('REGEX("", "a+")', {}, false, 'REGEX one or more no match');
+    testFormula('REGEX("aa", "a{2}")', {}, true, 'REGEX exact count');
+    testFormula('REGEX("aaa", "a{2,4}")', {}, true, 'REGEX range count');
+    
+    // Anchors
+    testFormula('REGEX("Hello", "^Hello")', {}, true, 'REGEX start anchor match');
+    testFormula('REGEX("Say Hello", "^Hello")', {}, false, 'REGEX start anchor no match');
+    testFormula('REGEX("Hello", "Hello$")', {}, true, 'REGEX end anchor match');
+    testFormula('REGEX("Hello World", "Hello$")', {}, false, 'REGEX end anchor no match');
+    testFormula('REGEX("Hello", "^Hello$")', {}, true, 'REGEX full match');
+    testFormula('REGEX("Hello World", "^Hello$")', {}, false, 'REGEX full match no match');
+    
+    // Email validation examples (from Salesforce docs)
+    testFormula('REGEX("test@example.com", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, true, 'REGEX email valid');
+    testFormula('REGEX("invalid-email", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, false, 'REGEX email invalid');
+    testFormula('REGEX("user@domain.co", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, true, 'REGEX email short domain');
+    
+    // Phone number validation examples
+    testFormula('REGEX("(555) 123-4567", "\\\\([0-9]{3}\\\\) [0-9]{3}-[0-9]{4}")', {}, true, 'REGEX phone format 1');
+    testFormula('REGEX("555-123-4567", "[0-9]{3}-[0-9]{3}-[0-9]{4}")', {}, true, 'REGEX phone format 2');
+    testFormula('REGEX("5551234567", "[0-9]{10}")', {}, true, 'REGEX phone format 3');
+    testFormula('REGEX("555-123-456", "[0-9]{3}-[0-9]{3}-[0-9]{4}")', {}, false, 'REGEX phone invalid');
+    
+    // ZIP code validation (from Salesforce docs)
+    testFormula('REGEX("12345", "\\\\d{5}(-\\\\d{4})?")', {}, true, 'REGEX ZIP 5 digits');
+    testFormula('REGEX("12345-6789", "\\\\d{5}(-\\\\d{4})?")', {}, true, 'REGEX ZIP+4');
+    testFormula('REGEX("1234", "\\\\d{5}(-\\\\d{4})?")', {}, false, 'REGEX ZIP too short');
+    
+    // SSN validation (from Salesforce docs)
+    testFormula('REGEX("123-45-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")', {}, true, 'REGEX SSN with dashes');
+    testFormula('REGEX("123456789", "\\\\d{9}")', {}, true, 'REGEX SSN no dashes');
+    testFormula('REGEX("12-345-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")', {}, false, 'REGEX SSN wrong format');
+    
+    // Credit card validation (from Salesforce docs)
+    testFormula('REGEX("1234-1234-1234-1234", "\\\\d{4}-\\\\d{4}-\\\\d{4}-\\\\d{4}")', {}, true, 'REGEX credit card with dashes');
+    testFormula('REGEX("1234123412341234", "\\\\d{16}")', {}, true, 'REGEX credit card no dashes');
+    
+    // California Driver License example (from Salesforce docs)
+    testFormula('REGEX("C1234567", "[A-Z]\\\\d{7}")', {}, true, 'REGEX CA license');
+    testFormula('REGEX("1234567", "[A-Z]\\\\d{7}")', {}, false, 'REGEX CA license no letter');
+    
+    // Special characters and escaping
+    testFormula('REGEX("test.com", "test\\\\.com")', {}, true, 'REGEX escaped dot');
+    testFormula('REGEX("testXcom", "test\\\\.com")', {}, false, 'REGEX escaped dot no match');
+    testFormula('REGEX("test+", "test\\\\+")', {}, true, 'REGEX escaped plus');
+    testFormula('REGEX("test*", "test\\\\*")', {}, true, 'REGEX escaped asterisk');
+    
+    // Word boundaries
+    testFormula('REGEX("the cat", "\\\\bcat\\\\b")', {}, true, 'REGEX word boundary match');
+    testFormula('REGEX("concatenate", "\\\\bcat\\\\b")', {}, false, 'REGEX word boundary no match');
+    
+    // Groups
+    testFormula('REGEX("hello world", "(hello|hi) world")', {}, true, 'REGEX group alternation match');
+    testFormula('REGEX("hi world", "(hello|hi) world")', {}, true, 'REGEX group alternation match 2');
+    testFormula('REGEX("hey world", "(hello|hi) world")', {}, false, 'REGEX group alternation no match');
+    
+    // Case with variables
+    testFormula('REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")', 
+               {Email: 'john.doe@example.com'}, true, 'REGEX email variable valid');
+    testFormula('REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")', 
+               {Email: 'invalid.email'}, false, 'REGEX email variable invalid');
+    
+    // Empty string handling
+    testFormula('REGEX("", ".*")', {}, true, 'REGEX empty string matches any');
+    testFormula('REGEX("", ".+")', {}, false, 'REGEX empty string no match required');
+    testFormula('REGEX("test", "")', {}, true, 'REGEX empty pattern matches');
+    
+    // Error cases
+    testFormulaError('REGEX("test")', {}, 'Not enough arguments 1/2 in REGEX("test")', 'REGEX not enough arguments');
+    testFormulaError('REGEX()', {}, 'Not enough arguments 0/2 in REGEX()', 'REGEX no arguments');
+    testFormulaError('REGEX("test", "pattern", "extra")', {}, 'Too many arguments 3/2 in REGEX("test", "pattern", "extra")', 'REGEX too many arguments');
+    testFormulaError('REGEX(123, "pattern")', {}, 'Argument 1 of REGEX must be a string in REGEX(123, "pattern")', 'REGEX first arg not string');
+    testFormulaError('REGEX("test", 123)', {}, 'Argument 2 of REGEX must be a string in REGEX("test", 123)', 'REGEX second arg not string');
+    testFormulaError('REGEX("test", "[invalid")', {}, 'Invalid regular expression pattern: [invalid in REGEX("test", "[invalid")', 'REGEX invalid pattern');
+  });
 });
 
 
