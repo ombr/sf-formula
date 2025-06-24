@@ -2,7 +2,12 @@ import assert from 'assert';
 import { Context, formulaEval, Options } from '../src/formula';
 
 describe('formula_eval', () => {
-  function testFormula(formula: string, context: Context, expected: unknown, description: string) {
+  function testFormula(
+    formula: string,
+    context: Context,
+    expected: unknown,
+    description: string
+  ) {
     const title = `${description} ${formula} => ${JSON.stringify(expected)}`;
     it(title, () => {
       expect(formulaEval(formula, context)).toBe(expected);
@@ -12,7 +17,13 @@ describe('formula_eval', () => {
     });*/
   }
 
-  function testFormulaWithOptions(formula: string, context: Context, options: Options, expected: unknown, description: string) {
+  function testFormulaWithOptions(
+    formula: string,
+    context: Context,
+    options: Options,
+    expected: unknown,
+    description: string
+  ) {
     const title = `${description} ${formula} => ${JSON.stringify(expected)}`;
     it(title, () => {
       expect(formulaEval(formula, context, options)).toBe(expected);
@@ -22,10 +33,14 @@ describe('formula_eval', () => {
     });*/
   }
 
-  function testFormulaError(formula: string, context: Context, expectedError: string, description: string) {
+  function testFormulaError(
+    formula: string,
+    context: Context,
+    expectedError: string,
+    description: string
+  ) {
     it(description, () => {
-      expect(() => formulaEval(formula, context))
-        .toThrow(expectedError);
+      expect(() => formulaEval(formula, context)).toThrow(expectedError);
     });
   }
 
@@ -72,51 +87,72 @@ describe('formula_eval', () => {
 
   // Text Operations
   describe('Variables', () => {
-    testFormula('FirstName', { FirstName: "John" }, 'John', 'text field reference');
-    testFormula('FirstName.value', { FirstName: { value: "John" } }, 'John', 'object field reference');
-    testFormula('a.b.c', { a: { b: { c: "Super" } } }, 'Super', 'object field reference');
-    testFormula('FirstName & " " & LastName',
-      { FirstName: "John", LastName: "Doe" }, 
-      'John Doe', 
-      'text concatenation');
+    testFormula(
+      'FirstName',
+      { FirstName: 'John' },
+      'John',
+      'text field reference'
+    );
+    testFormula(
+      'FirstName.value',
+      { FirstName: { value: 'John' } },
+      'John',
+      'object field reference'
+    );
+    testFormula(
+      'a.b.c',
+      { a: { b: { c: 'Super' } } },
+      'Super',
+      'object field reference'
+    );
+    testFormula(
+      'FirstName & " " & LastName',
+      { FirstName: 'John', LastName: 'Doe' },
+      'John Doe',
+      'text concatenation'
+    );
   });
 
   describe('Functions', () => {
     testFormula('NOT(true)', {}, false, 'NOT true');
     testFormula('NOT(false)', {}, true, 'NOT false');
-    testFormula('ISBLANK(Email)',
-      { Email: "TEST@EXAMPLE.COM" }, 
+    testFormula(
+      'ISBLANK(Email)',
+      { Email: 'TEST@EXAMPLE.COM' },
       false,
-      'IS BLANK false');
-    testFormula('ISBLANK(Email)',
-      { Email: "" },
-      true,
-      'IS BLANK false');
-    testFormula('ISBLANK(Email)',
-      { Email: " " },
-      true,
-      'IS BLANK false');
-    testFormula('ISBLANK(Email) && ISBLANK(FirstName)',
-      { Email: "john@doe.com", FirstName: "John" },
+      'IS BLANK false'
+    );
+    testFormula('ISBLANK(Email)', { Email: '' }, true, 'IS BLANK false');
+    testFormula('ISBLANK(Email)', { Email: ' ' }, true, 'IS BLANK false');
+    testFormula(
+      'ISBLANK(Email) && ISBLANK(FirstName)',
+      { Email: 'john@doe.com', FirstName: 'John' },
       false,
-      'Multiple ISBLANK true');
-    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
-      { Email: "", FirstName: "John" },
+      'Multiple ISBLANK true'
+    );
+    testFormula(
+      'NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
+      { Email: '', FirstName: 'John' },
       false,
-      'Multiple NOT(ISBLANK) false');
-    testFormula('NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
-      { Email: "john@doe.fs", FirstName: "John" },
+      'Multiple NOT(ISBLANK) false'
+    );
+    testFormula(
+      'NOT(ISBLANK(Email)) && NOT(ISBLANK(FirstName))',
+      { Email: 'john@doe.fs', FirstName: 'John' },
       true,
-      'Multiple NOT(ISBLANK) false');
+      'Multiple NOT(ISBLANK) false'
+    );
   });
 
   // Numeric Operations
   describe('Numeric Formulas', () => {
     testFormula('Amount', { Amount: 100 }, 100, 'numeric field reference');
-    testFormula('Amount * Quantity', 
-      { Amount: 10, Quantity: 5 }, 
-      50, 
-      'numeric multiplication');
+    testFormula(
+      'Amount * Quantity',
+      { Amount: 10, Quantity: 5 },
+      50,
+      'numeric multiplication'
+    );
     /*testFormula('ROUND(Amount, 2)',
       { Amount: 100.456 }, 
       100.46, 
@@ -127,45 +163,52 @@ describe('formula_eval', () => {
       'absolute value');*/
   });
 
-
   // Logical Operations
   describe('Logical Formulas', () => {
-    testFormula('IsActive', 
-      { IsActive: true }, 
-      true, 
-      'boolean field reference');
-    testFormula('Amount > 1000', 
-      { Amount: 1500 }, 
-      true, 
-      'numeric comparison');
-    testFormula('Status = "Open"', 
-      { Status: "Open" }, 
-      true, 
-      'text comparison');
-    testFormula('IsActive AND Amount > 0',
-      { IsActive: true, Amount: 100 }, 
-      true, 
-      'logical AND');
-    testFormula('IsClosed OR Amount = 0',
-      { IsClosed: false, Amount: 0 }, 
-      true, 
-      'logical OR');
-    testFormula('ISBLANK(FirstName)',
-      { FirstName: "" },
+    testFormula(
+      'IsActive',
+      { IsActive: true },
       true,
-      'check if field is blank');
-    testFormula('ISBLANK(FirstName)',
-      { FirstName: "Luc" },
+      'boolean field reference'
+    );
+    testFormula('Amount > 1000', { Amount: 1500 }, true, 'numeric comparison');
+    testFormula('Status = "Open"', { Status: 'Open' }, true, 'text comparison');
+    testFormula(
+      'IsActive AND Amount > 0',
+      { IsActive: true, Amount: 100 },
+      true,
+      'logical AND'
+    );
+    testFormula(
+      'IsClosed OR Amount = 0',
+      { IsClosed: false, Amount: 0 },
+      true,
+      'logical OR'
+    );
+    testFormula(
+      'ISBLANK(FirstName)',
+      { FirstName: '' },
+      true,
+      'check if field is blank'
+    );
+    testFormula(
+      'ISBLANK(FirstName)',
+      { FirstName: 'Luc' },
       false,
-      'check if field is blank');
-    testFormula('NOT(IsActive)',
+      'check if field is blank'
+    );
+    testFormula(
+      'NOT(IsActive)',
       { IsActive: false },
       true,
-      'negation of boolean value');
-    testFormula('NOT(IsActive)',
+      'negation of boolean value'
+    );
+    testFormula(
+      'NOT(IsActive)',
       { IsActive: true },
       false,
-      'negation of boolean value');
+      'negation of boolean value'
+    );
   });
 
   /*
@@ -188,105 +231,222 @@ describe('formula_eval', () => {
 
   // Conditional Logic
   describe('Conditional Formulas', () => {
-    testFormula('IF(Amount > 1000, "High", "Low")', 
-      { Amount: 1500 }, 
-      "High", 
-      'simple if condition');
-    testFormula('IF(Amount > 1000, "High", "Low")',
+    testFormula(
+      'IF(Amount > 1000, "High", "Low")',
+      { Amount: 1500 },
+      'High',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(Amount > 1000, "High", "Low")',
       { Amount: 2 },
-      "Low",
-      'simple if condition');
-    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
-      { name: "J" },
-      "Missing 2 Chars",
-      'simple if condition');
-    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
-      { name: "Jo" },
-      "Missing 1 Chars",
-      'simple if condition');
-    testFormula('IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
-      { name: "John" },
+      'Low',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
+      { name: 'J' },
+      'Missing 2 Chars',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
+      { name: 'Jo' },
+      'Missing 1 Chars',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(LEN(name) < 3, "Missing " + TEXT(3 - LEN(name)) + " Chars" , true)',
+      { name: 'John' },
       true,
-      'simple if condition');
-    testFormula('IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
-      (variables: string[])=> {
-        if(variables.join('.') !== "name.value") throw new Error("Oups trying to evaluate another variable than name.value");
-        return 'Jo'
+      'simple if condition'
+    );
+    testFormula(
+      'IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
+      (variables: string[]) => {
+        if (variables.join('.') !== 'name.value')
+          throw new Error(
+            'Oups trying to evaluate another variable than name.value'
+          );
+        return 'Jo';
       },
-      "Missing 1 chars",
-      'simple if condition');
-    testFormula('IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
-      (variables: string[])=> {
-        if(variables.join('.') !== "name.value") throw new Error("Oups trying to evaluate another variable than name.value");
-        return 'John'
+      'Missing 1 chars',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(LEN(name.value) < 3, "Missing " + TEXT(3 - LEN(name.value)) + " chars" , "")',
+      (variables: string[]) => {
+        if (variables.join('.') !== 'name.value')
+          throw new Error(
+            'Oups trying to evaluate another variable than name.value'
+          );
+        return 'John';
       },
-      "",
-      'simple if condition');
-    testFormula('IF(true, firstname, lastname)',
-      (variable)=> {
-        if(variable.join('.') !== "firstname") {
-          throw new Error("Oups trying to evaluate another variable than firstname");
+      '',
+      'simple if condition'
+    );
+    testFormula(
+      'IF(true, firstname, lastname)',
+      (variable) => {
+        if (variable.join('.') !== 'firstname') {
+          throw new Error(
+            'Oups trying to evaluate another variable than firstname'
+          );
         }
-        return "John";
+        return 'John';
       },
-      "John",
-      'test if true argument is evaluated');
-    testFormula('IF(false, firstname, lastname)',
-      (variable)=> {
-        if(variable.join('.') !== "lastname") {
-          throw new Error("Oups trying to evaluate another variable than lastname");
+      'John',
+      'test if true argument is evaluated'
+    );
+    testFormula(
+      'IF(false, firstname, lastname)',
+      (variable) => {
+        if (variable.join('.') !== 'lastname') {
+          throw new Error(
+            'Oups trying to evaluate another variable than lastname'
+          );
         }
-        return "Else";
+        return 'Else';
       },
-      "Else",
-      'test if false argument is evaluated');
+      'Else',
+      'test if false argument is evaluated'
+    );
   });
-
 
   describe('functions', () => {
     testFormula('LEN("Hello")', {}, 5, 'LEN function');
     testFormula('LEN("")', {}, 0, 'LEN function');
-    testFormulaError('LEN(123)', {}, 'Argument should be a string in LEN(123)', 'LEN function');
+    testFormulaError(
+      'LEN(123)',
+      {},
+      'Argument should be a string in LEN(123)',
+      'LEN function'
+    );
 
     testFormula('FLOOR(5.7)', {}, 5, 'FLOOR function with positive number');
     testFormula('FLOOR(5.2)', {}, 5, 'FLOOR function with positive number');
     testFormula('FLOOR(-5.7)', {}, -6, 'FLOOR function with negative number');
     testFormula('FLOOR(-5.2)', {}, -6, 'FLOOR function with negative number');
     testFormula('FLOOR(5)', {}, 5, 'FLOOR function with integer');
-    testFormulaError('FLOOR("abc")', {}, 'Argument should be a number in FLOOR("abc")', 'FLOOR function with non-number');
+    testFormulaError(
+      'FLOOR("abc")',
+      {},
+      'Argument should be a number in FLOOR("abc")',
+      'FLOOR function with non-number'
+    );
 
     testFormula('CEILING(5.7)', {}, 6, 'CEILING function with positive number');
     testFormula('CEILING(5.2)', {}, 6, 'CEILING function with positive number');
-    testFormula('CEILING(-5.7)', {}, -5, 'CEILING function with negative number');
-    testFormula('CEILING(-5.2)', {}, -5, 'CEILING function with negative number');
+    testFormula(
+      'CEILING(-5.7)',
+      {},
+      -5,
+      'CEILING function with negative number'
+    );
+    testFormula(
+      'CEILING(-5.2)',
+      {},
+      -5,
+      'CEILING function with negative number'
+    );
     testFormula('CEILING(5)', {}, 5, 'CEILING function with integer');
-    testFormulaError('CEILING("abc")', {}, 'Argument should be a number in CEILING("abc")', 'CEILING function with non-number');
+    testFormulaError(
+      'CEILING("abc")',
+      {},
+      'Argument should be a number in CEILING("abc")',
+      'CEILING function with non-number'
+    );
 
-    testFormula('BLANKVALUE("", "Default")', {}, "Default", 'BLANKVALUE with empty string');
-    testFormula('BLANKVALUE(null, "Default")', {}, "Default", 'BLANKVALUE with null');
-    testFormula('BLANKVALUE(undefined, "Default")', {}, "Default", 'BLANKVALUE with undefined');
-    testFormula('BLANKVALUE(" ", "Default")', {}, "Default", 'BLANKVALUE with whitespace');
-    testFormula('BLANKVALUE("Hello", "Default")', {}, "Hello", 'BLANKVALUE with non-blank string');
-    testFormula('BLANKVALUE(123, "Default")', {}, 123, 'BLANKVALUE with number');
+    testFormula(
+      'BLANKVALUE("", "Default")',
+      {},
+      'Default',
+      'BLANKVALUE with empty string'
+    );
+    testFormula(
+      'BLANKVALUE(null, "Default")',
+      {},
+      'Default',
+      'BLANKVALUE with null'
+    );
+    testFormula(
+      'BLANKVALUE(undefined, "Default")',
+      {},
+      'Default',
+      'BLANKVALUE with undefined'
+    );
+    testFormula(
+      'BLANKVALUE(" ", "Default")',
+      {},
+      'Default',
+      'BLANKVALUE with whitespace'
+    );
+    testFormula(
+      'BLANKVALUE("Hello", "Default")',
+      {},
+      'Hello',
+      'BLANKVALUE with non-blank string'
+    );
+    testFormula(
+      'BLANKVALUE(123, "Default")',
+      {},
+      123,
+      'BLANKVALUE with number'
+    );
     testFormula('BLANKVALUE(0, "Default")', {}, 0, 'BLANKVALUE with zero');
-    testFormula('BLANKVALUE(false, "Default")', {}, false, 'BLANKVALUE with false');
-    testFormula('BLANKVALUE(Name, "Unknown")', { Name: "" }, "Unknown", 'BLANKVALUE with blank variable');
-    testFormula('BLANKVALUE(Name, "Unknown")', { Name: "John" }, "John", 'BLANKVALUE with non-blank variable');
-    testFormulaError('BLANKVALUE()', {}, 'Not enough arguments 0/2 in BLANKVALUE()', 'BLANKVALUE with no arguments');
-    testFormulaError('BLANKVALUE("test")', {}, 'Not enough arguments 1/2 in BLANKVALUE("test")', 'BLANKVALUE with 1 argument');
+    testFormula(
+      'BLANKVALUE(false, "Default")',
+      {},
+      false,
+      'BLANKVALUE with false'
+    );
+    testFormula(
+      'BLANKVALUE(Name, "Unknown")',
+      { Name: '' },
+      'Unknown',
+      'BLANKVALUE with blank variable'
+    );
+    testFormula(
+      'BLANKVALUE(Name, "Unknown")',
+      { Name: 'John' },
+      'John',
+      'BLANKVALUE with non-blank variable'
+    );
+    testFormulaError(
+      'BLANKVALUE()',
+      {},
+      'Not enough arguments 0/2 in BLANKVALUE()',
+      'BLANKVALUE with no arguments'
+    );
+    testFormulaError(
+      'BLANKVALUE("test")',
+      {},
+      'Not enough arguments 1/2 in BLANKVALUE("test")',
+      'BLANKVALUE with 1 argument'
+    );
   });
 
   describe('Dynamic context', () => {
-    testFormula('Amount', (variables: string[])=> {
-      assert(variables.length === 1);
-      assert(variables[0] === 'Amount');
-      return 100
-    }, 100, 'numeric field reference');
+    testFormula(
+      'Amount',
+      (variables: string[]) => {
+        assert(variables.length === 1);
+        assert(variables[0] === 'Amount');
+        return 100;
+      },
+      100,
+      'numeric field reference'
+    );
 
-    testFormula('Amount * Quantity', (variables: string[])=> {
-      if(variables[0] === 'Amount') return 100;
-      return 2;
-    }, 200, 'numeric field reference');
+    testFormula(
+      'Amount * Quantity',
+      (variables: string[]) => {
+        if (variables[0] === 'Amount') return 100;
+        return 2;
+      },
+      200,
+      'numeric field reference'
+    );
   });
   // Error Cases
   /*
@@ -297,7 +457,7 @@ describe('formula_eval', () => {
       '',
       ''
     );*/
-    /*testFormulaError(
+  /*testFormulaError(
       'NonexistentVariable',
       {},
       'Field "NonexistentVariable" not found in context',
@@ -321,7 +481,7 @@ describe('formula_eval', () => {
     );
     */
 
-    /*testFormulaError(
+  /*testFormulaError(
       'INVALID_FUNCTION(123)',
       {},
       'Unknown function: INVALID_FUNCTION',
@@ -331,39 +491,102 @@ describe('formula_eval', () => {
 
   describe('Dynamic functions', () => {
     const today = new Date();
-    testFormulaWithOptions('TODAY()', {}, { functions: { 'TODAY': () => today } }, today, 'Dynamic function without arguments');
-    testFormulaWithOptions('INC(12)',{}, {functions: { 'INC': (...args: Array<()=>unknown>) => {
-        assert(args.length === 1);
-        const arg = args[0]();
-        if(typeof arg !== 'number') throw new Error('OUPS ?');
-        assert(arg === 12);
+    testFormulaWithOptions(
+      'TODAY()',
+      {},
+      { functions: { TODAY: () => today } },
+      today,
+      'Dynamic function without arguments'
+    );
+    testFormulaWithOptions(
+      'INC(12)',
+      {},
+      {
+        functions: {
+          INC: (...args: Array<() => unknown>) => {
+            assert(args.length === 1);
+            const arg = args[0]();
+            if (typeof arg !== 'number') throw new Error('OUPS ?');
+            assert(arg === 12);
 
-        return arg + 1;
-      }
-    }}, 13, 'Dynamic function with one argument');
+            return arg + 1;
+          },
+        },
+      },
+      13,
+      'Dynamic function with one argument'
+    );
 
-    testFormulaWithOptions('SUM(12, 4)',{}, {
-      functions: {'SUM': (...args: Array<()=>unknown>) => {
-        assert(args.length === 2);
-        const values = args.map((f)=> f());
-        assert(values[0] === 12);
-        assert(values[1] === 4);
+    testFormulaWithOptions(
+      'SUM(12, 4)',
+      {},
+      {
+        functions: {
+          SUM: (...args: Array<() => unknown>) => {
+            assert(args.length === 2);
+            const values = args.map((f) => f());
+            assert(values[0] === 12);
+            assert(values[1] === 4);
 
-        return 12 + 4;
-      }
-    }}, 12 + 4, 'Dynamic function with arguments');
+            return 12 + 4;
+          },
+        },
+      },
+      12 + 4,
+      'Dynamic function with arguments'
+    );
   });
 
   describe('NULLVALUE', () => {
-    testFormula('NULLVALUE(NullVar, "Default")', {NullVar: null}, "Default", 'NULLVALUE null variable');
-    testFormula('NULLVALUE(NotDefined, "Default")', {}, "Default", 'NULLVALUE undefined variable');
-    testFormula('NULLVALUE("Actual", "Default")', {}, "Actual", 'NULLVALUE non-null string');
-    testFormula('NULLVALUE("", "Default")', {}, "", 'NULLVALUE empty string (not null)');
+    testFormula(
+      'NULLVALUE(NullVar, "Default")',
+      { NullVar: null },
+      'Default',
+      'NULLVALUE null variable'
+    );
+    testFormula(
+      'NULLVALUE(NotDefined, "Default")',
+      {},
+      'Default',
+      'NULLVALUE undefined variable'
+    );
+    testFormula(
+      'NULLVALUE("Actual", "Default")',
+      {},
+      'Actual',
+      'NULLVALUE non-null string'
+    );
+    testFormula(
+      'NULLVALUE("", "Default")',
+      {},
+      '',
+      'NULLVALUE empty string (not null)'
+    );
     testFormula('NULLVALUE(0, "Default")', {}, 0, 'NULLVALUE zero (not null)');
-    testFormula('NULLVALUE(Name, "Unknown")', {Name: 'John'}, "John", 'NULLVALUE Name="John"');
-    testFormula('NULLVALUE(BLANKVALUE(null, null), "Subst")', {}, "Subst", 'NULLVALUE nested with null');
-    testFormulaError('NULLVALUE(1)', {}, 'Not enough arguments 1/2 in NULLVALUE(1)', 'NULLVALUE one argument');
-    testFormulaError('NULLVALUE()', {}, 'Not enough arguments 0/2 in NULLVALUE()', 'NULLVALUE one argument');
+    testFormula(
+      'NULLVALUE(Name, "Unknown")',
+      { Name: 'John' },
+      'John',
+      'NULLVALUE Name="John"'
+    );
+    testFormula(
+      'NULLVALUE(BLANKVALUE(null, null), "Subst")',
+      {},
+      'Subst',
+      'NULLVALUE nested with null'
+    );
+    testFormulaError(
+      'NULLVALUE(1)',
+      {},
+      'Not enough arguments 1/2 in NULLVALUE(1)',
+      'NULLVALUE one argument'
+    );
+    testFormulaError(
+      'NULLVALUE()',
+      {},
+      'Not enough arguments 0/2 in NULLVALUE()',
+      'NULLVALUE one argument'
+    );
   });
 
   describe('ISNUMBER', () => {
@@ -378,46 +601,161 @@ describe('formula_eval', () => {
     testFormula('ISNUMBER("abc")', {}, false, 'ISNUMBER "abc"');
     testFormula('ISNUMBER("12a3")', {}, false, 'ISNUMBER "12a3"');
     testFormula('ISNUMBER("12.3.4")', {}, false, 'ISNUMBER "12.3.4"');
-    testFormula('ISNUMBER("1,234")', {}, false, 'ISNUMBER "1,234" (with comma)');
+    testFormula(
+      'ISNUMBER("1,234")',
+      {},
+      false,
+      'ISNUMBER "1,234" (with comma)'
+    );
     testFormula('ISNUMBER(true)', {}, false, 'ISNUMBER true');
     testFormula('ISNUMBER(false)', {}, false, 'ISNUMBER false');
-    testFormula('ISNUMBER(NullVar)', {NullVar: null}, false, 'ISNUMBER null');
+    testFormula('ISNUMBER(NullVar)', { NullVar: null }, false, 'ISNUMBER null');
     testFormula('ISNUMBER(NotDefined)', {}, false, 'ISNUMBER undefined');
     testFormula('ISNUMBER(PI())', {}, true, 'ISNUMBER PI()');
-    testFormula('ISNUMBER(1/0)', {}, false, 'ISNUMBER Infinity (isFinite check)'); // JS 1/0 is Infinity
+    testFormula(
+      'ISNUMBER(1/0)',
+      {},
+      false,
+      'ISNUMBER Infinity (isFinite check)'
+    ); // JS 1/0 is Infinity
     testFormula('ISNUMBER(0/0)', {}, false, 'ISNUMBER NaN (isFinite check)'); // JS 0/0 is NaN
-    testFormulaError('ISNUMBER()', {}, 'Not enough arguments 0/1 in ISNUMBER()', 'ISNUMBER no arguments');
-    testFormulaError('ISNUMBER(1,2)', {}, 'Too many arguments 2/1 in ISNUMBER(1,2)', 'ISNUMBER too many arguments');
+    testFormulaError(
+      'ISNUMBER()',
+      {},
+      'Not enough arguments 0/1 in ISNUMBER()',
+      'ISNUMBER no arguments'
+    );
+    testFormulaError(
+      'ISNUMBER(1,2)',
+      {},
+      'Too many arguments 2/1 in ISNUMBER(1,2)',
+      'ISNUMBER too many arguments'
+    );
     // testFormula('ISNUMBER(DATE(2023,1,1))', {}, false, 'ISNUMBER Date object');
   });
   describe('ISNULL', () => {
-    testFormula('ISNULL(NullVar)', {NullVar: null}, true, 'ISNULL null variable');
+    testFormula(
+      'ISNULL(NullVar)',
+      { NullVar: null },
+      true,
+      'ISNULL null variable'
+    );
     testFormula('ISNULL(NotDefined)', {}, true, 'ISNULL undefined variable');
     testFormula('ISNULL("")', {}, false, 'ISNULL empty string');
     testFormula('ISNULL("text")', {}, false, 'ISNULL string');
     testFormula('ISNULL(0)', {}, false, 'ISNULL zero');
     testFormula('ISNULL(1)', {}, false, 'ISNULL number');
-    testFormula('ISNULL(BLANKVALUE("", 1))', {}, false, 'ISNULL BLANKVALUE returns 1 (not null)');
-    testFormula('ISNULL(BLANKVALUE(null, "a"))', {}, false, 'ISNULL BLANKVALUE returns "a" (not null)');
-    testFormula('ISNULL(Name)', {Name: 'John'}, false, 'ISNULL Name="John"');
-    testFormulaError('ISNULL()', {}, 'Not enough arguments 0/1 in ISNULL()', 'ISNULL no arguments');
-    testFormulaError('ISNULL(1,2)', {}, 'Too many arguments 2/1 in ISNULL(1,2)', 'ISNULL too many arguments');
+    testFormula(
+      'ISNULL(BLANKVALUE("", 1))',
+      {},
+      false,
+      'ISNULL BLANKVALUE returns 1 (not null)'
+    );
+    testFormula(
+      'ISNULL(BLANKVALUE(null, "a"))',
+      {},
+      false,
+      'ISNULL BLANKVALUE returns "a" (not null)'
+    );
+    testFormula('ISNULL(Name)', { Name: 'John' }, false, 'ISNULL Name="John"');
+    testFormulaError(
+      'ISNULL()',
+      {},
+      'Not enough arguments 0/1 in ISNULL()',
+      'ISNULL no arguments'
+    );
+    testFormulaError(
+      'ISNULL(1,2)',
+      {},
+      'Too many arguments 2/1 in ISNULL(1,2)',
+      'ISNULL too many arguments'
+    );
   });
   describe('CASE', () => {
-    testFormula('CASE(3, 1, "One", 2, "Two", 3, "Three", "Other")', {}, "Three", 'CASE match third value');
-    testFormula('CASE(4, 1, "One", 2, "Two", 3, "Three", "Other")', {}, "Other", 'CASE use else_result');
-    testFormula('CASE(5, 1, "One", 2, "Two", 3, "Three")', {}, null, 'CASE no match, no else_result');
-    testFormula('CASE("B", "A", 10, "B", 20, "C", 30, 0)', {}, 20, 'CASE string match');
-    testFormula('CASE("D", "A", 10, "B", 20, "C", 30, 100)', {}, 100, 'CASE string use else_result');
-    testFormula('CASE("D", "A", 10, "B", 20, "C", 30)', {}, null, 'CASE string no match, no else');
-    testFormula('CASE(Status, "Open", 1, "Closed", 2, 0)', {Status: 'Open'}, 1, 'CASE var match');
-    testFormula('CASE(Status, "Pending", 1, "Closed", 2, 0)', {Status: 'Open'}, 0, 'CASE var use else_result');
-    testFormula('CASE(true, false, "No", true, "Yes", "Maybe")', {}, "Yes", 'CASE boolean expression');
-    testFormula('CASE(Amount, 50, "Fifty", 100, "Hundred", 200, "Two Hundred", "Other")', {Amount: 100}, "Hundred", 'CASE number expression');
-    testFormula('CASE(Amount, 50, "Fifty", 101, "HundredOne", "Other")', {Amount: 100}, "Other", 'CASE number expression else');
-    testFormulaError('CASE(1)', {}, 'Not enough arguments 1/3 in CASE(1)', 'CASE one argument');
-    testFormulaError('CASE(1, 2)', {}, 'Not enough arguments 2/3 in CASE(1, 2)', 'CASE two arguments');
-    testFormula('CASE(2, 2, "Val2")', {}, "Val2", 'CASE expression matches value, no else'); // This is valid: expression, value1, result1
+    testFormula(
+      'CASE(3, 1, "One", 2, "Two", 3, "Three", "Other")',
+      {},
+      'Three',
+      'CASE match third value'
+    );
+    testFormula(
+      'CASE(4, 1, "One", 2, "Two", 3, "Three", "Other")',
+      {},
+      'Other',
+      'CASE use else_result'
+    );
+    testFormula(
+      'CASE(5, 1, "One", 2, "Two", 3, "Three")',
+      {},
+      null,
+      'CASE no match, no else_result'
+    );
+    testFormula(
+      'CASE("B", "A", 10, "B", 20, "C", 30, 0)',
+      {},
+      20,
+      'CASE string match'
+    );
+    testFormula(
+      'CASE("D", "A", 10, "B", 20, "C", 30, 100)',
+      {},
+      100,
+      'CASE string use else_result'
+    );
+    testFormula(
+      'CASE("D", "A", 10, "B", 20, "C", 30)',
+      {},
+      null,
+      'CASE string no match, no else'
+    );
+    testFormula(
+      'CASE(Status, "Open", 1, "Closed", 2, 0)',
+      { Status: 'Open' },
+      1,
+      'CASE var match'
+    );
+    testFormula(
+      'CASE(Status, "Pending", 1, "Closed", 2, 0)',
+      { Status: 'Open' },
+      0,
+      'CASE var use else_result'
+    );
+    testFormula(
+      'CASE(true, false, "No", true, "Yes", "Maybe")',
+      {},
+      'Yes',
+      'CASE boolean expression'
+    );
+    testFormula(
+      'CASE(Amount, 50, "Fifty", 100, "Hundred", 200, "Two Hundred", "Other")',
+      { Amount: 100 },
+      'Hundred',
+      'CASE number expression'
+    );
+    testFormula(
+      'CASE(Amount, 50, "Fifty", 101, "HundredOne", "Other")',
+      { Amount: 100 },
+      'Other',
+      'CASE number expression else'
+    );
+    testFormulaError(
+      'CASE(1)',
+      {},
+      'Not enough arguments 1/3 in CASE(1)',
+      'CASE one argument'
+    );
+    testFormulaError(
+      'CASE(1, 2)',
+      {},
+      'Not enough arguments 2/3 in CASE(1, 2)',
+      'CASE two arguments'
+    );
+    testFormula(
+      'CASE(2, 2, "Val2")',
+      {},
+      'Val2',
+      'CASE expression matches value, no else'
+    ); // This is valid: expression, value1, result1
   });
   describe('Math Functions', () => {
     // ABS
@@ -425,9 +763,24 @@ describe('formula_eval', () => {
       testFormula('ABS(10)', {}, 10, 'ABS positive');
       testFormula('ABS(-10)', {}, 10, 'ABS negative');
       testFormula('ABS(0)', {}, 0, 'ABS zero');
-      testFormulaError('ABS("text")', {}, 'Argument 1 of ABS must be a number in ABS("text")', 'ABS text input');
-      testFormulaError('ABS()', {}, 'Not enough arguments 0/1 in ABS()', 'ABS no arguments');
-      testFormulaError('ABS(1, 2)', {}, 'Too many arguments 2/1 in ABS(1, 2)', 'ABS too many arguments');
+      testFormulaError(
+        'ABS("text")',
+        {},
+        'Argument 1 of ABS must be a number in ABS("text")',
+        'ABS text input'
+      );
+      testFormulaError(
+        'ABS()',
+        {},
+        'Not enough arguments 0/1 in ABS()',
+        'ABS no arguments'
+      );
+      testFormulaError(
+        'ABS(1, 2)',
+        {},
+        'Too many arguments 2/1 in ABS(1, 2)',
+        'ABS too many arguments'
+      );
     });
 
     // ACOS
@@ -438,9 +791,24 @@ describe('formula_eval', () => {
       testFormula('ACOS(0.5)', {}, Math.acos(0.5), 'ACOS 0.5');
       testFormula('ACOS(2)', {}, null, 'ACOS 2 (out of range)');
       testFormula('ACOS(-2)', {}, null, 'ACOS -2 (out of range)');
-      testFormulaError('ACOS("text")', {}, 'Argument 1 of ACOS must be a number in ACOS("text")', 'ACOS text input');
-      testFormulaError('ACOS()', {}, 'Not enough arguments 0/1 in ACOS()', 'ACOS no arguments');
-      testFormulaError('ACOS(1, 2)', {}, 'Too many arguments 2/1 in ACOS(1, 2)', 'ACOS too many arguments');
+      testFormulaError(
+        'ACOS("text")',
+        {},
+        'Argument 1 of ACOS must be a number in ACOS("text")',
+        'ACOS text input'
+      );
+      testFormulaError(
+        'ACOS()',
+        {},
+        'Not enough arguments 0/1 in ACOS()',
+        'ACOS no arguments'
+      );
+      testFormulaError(
+        'ACOS(1, 2)',
+        {},
+        'Too many arguments 2/1 in ACOS(1, 2)',
+        'ACOS too many arguments'
+      );
     });
 
     // ASIN
@@ -451,18 +819,48 @@ describe('formula_eval', () => {
       testFormula('ASIN(0.5)', {}, Math.asin(0.5), 'ASIN 0.5');
       testFormula('ASIN(2)', {}, null, 'ASIN 2 (out of range)');
       testFormula('ASIN(-2)', {}, null, 'ASIN -2 (out of range)');
-      testFormulaError('ASIN("text")', {}, 'Argument 1 of ASIN must be a number in ASIN("text")', 'ASIN text input');
-      testFormulaError('ASIN()', {}, 'Not enough arguments 0/1 in ASIN()', 'ASIN no arguments');
-      testFormulaError('ASIN(1, 2)', {}, 'Too many arguments 2/1 in ASIN(1, 2)', 'ASIN too many arguments');
+      testFormulaError(
+        'ASIN("text")',
+        {},
+        'Argument 1 of ASIN must be a number in ASIN("text")',
+        'ASIN text input'
+      );
+      testFormulaError(
+        'ASIN()',
+        {},
+        'Not enough arguments 0/1 in ASIN()',
+        'ASIN no arguments'
+      );
+      testFormulaError(
+        'ASIN(1, 2)',
+        {},
+        'Too many arguments 2/1 in ASIN(1, 2)',
+        'ASIN too many arguments'
+      );
     });
 
     // ATAN
     describe('ATAN', () => {
       testFormula('ATAN(0)', {}, 0, 'ATAN 0');
       testFormula('ATAN(1)', {}, Math.PI / 4, 'ATAN 1');
-      testFormulaError('ATAN("text")', {}, 'Argument 1 of ATAN must be a number in ATAN("text")', 'ATAN text input');
-      testFormulaError('ATAN()', {}, 'Not enough arguments 0/1 in ATAN()', 'ATAN no arguments');
-      testFormulaError('ATAN(1, 2)', {}, 'Too many arguments 2/1 in ATAN(1, 2)', 'ATAN too many arguments');
+      testFormulaError(
+        'ATAN("text")',
+        {},
+        'Argument 1 of ATAN must be a number in ATAN("text")',
+        'ATAN text input'
+      );
+      testFormulaError(
+        'ATAN()',
+        {},
+        'Not enough arguments 0/1 in ATAN()',
+        'ATAN no arguments'
+      );
+      testFormulaError(
+        'ATAN(1, 2)',
+        {},
+        'Too many arguments 2/1 in ATAN(1, 2)',
+        'ATAN too many arguments'
+      );
     });
 
     // ATAN2
@@ -471,21 +869,66 @@ describe('formula_eval', () => {
       testFormula('ATAN2(1, 1)', {}, Math.PI / 4, 'ATAN2(1,1)');
       testFormula('ATAN2(10, 0)', {}, Math.PI / 2, 'ATAN2(10,0)');
       testFormula('ATAN2(0, 10)', {}, 0, 'ATAN2(0,10)');
-      testFormulaError('ATAN2("text", 1)', {}, 'Argument 1 of ATAN2 must be a number in ATAN2("text", 1)', 'ATAN2 text input for arg1');
-      testFormulaError('ATAN2(1, "text")', {}, 'Argument 2 of ATAN2 must be a number in ATAN2(1, "text")', 'ATAN2 text input for arg2');
-      testFormulaError('ATAN2()', {}, 'Not enough arguments 0/2 in ATAN2()', 'ATAN2 no arguments');
-      testFormulaError('ATAN2(1)', {}, 'Not enough arguments 1/2 in ATAN2(1)', 'ATAN2 one argument');
-      testFormulaError('ATAN2(1, 2, 3)', {}, 'Too many arguments 3/2 in ATAN2(1, 2, 3)', 'ATAN2 too many arguments');
+      testFormulaError(
+        'ATAN2("text", 1)',
+        {},
+        'Argument 1 of ATAN2 must be a number in ATAN2("text", 1)',
+        'ATAN2 text input for arg1'
+      );
+      testFormulaError(
+        'ATAN2(1, "text")',
+        {},
+        'Argument 2 of ATAN2 must be a number in ATAN2(1, "text")',
+        'ATAN2 text input for arg2'
+      );
+      testFormulaError(
+        'ATAN2()',
+        {},
+        'Not enough arguments 0/2 in ATAN2()',
+        'ATAN2 no arguments'
+      );
+      testFormulaError(
+        'ATAN2(1)',
+        {},
+        'Not enough arguments 1/2 in ATAN2(1)',
+        'ATAN2 one argument'
+      );
+      testFormulaError(
+        'ATAN2(1, 2, 3)',
+        {},
+        'Too many arguments 3/2 in ATAN2(1, 2, 3)',
+        'ATAN2 too many arguments'
+      );
     });
 
     // COS
     describe('COS', () => {
       testFormula('COS(0)', {}, 1, 'COS 0');
       testFormula('COS(PI())', {}, -1, 'COS PI');
-      testFormula('COS(PI()/2)', {}, Math.cos(Math.PI/2), 'COS PI/2 (close to 0)');
-      testFormulaError('COS("text")', {}, 'Argument 1 of COS must be a number in COS("text")', 'COS text input');
-      testFormulaError('COS()', {}, 'Not enough arguments 0/1 in COS()', 'COS no arguments');
-      testFormulaError('COS(1, 2)', {}, 'Too many arguments 2/1 in COS(1, 2)', 'COS too many arguments');
+      testFormula(
+        'COS(PI()/2)',
+        {},
+        Math.cos(Math.PI / 2),
+        'COS PI/2 (close to 0)'
+      );
+      testFormulaError(
+        'COS("text")',
+        {},
+        'Argument 1 of COS must be a number in COS("text")',
+        'COS text input'
+      );
+      testFormulaError(
+        'COS()',
+        {},
+        'Not enough arguments 0/1 in COS()',
+        'COS no arguments'
+      );
+      testFormulaError(
+        'COS(1, 2)',
+        {},
+        'Too many arguments 2/1 in COS(1, 2)',
+        'COS too many arguments'
+      );
     });
 
     // EXP
@@ -493,20 +936,60 @@ describe('formula_eval', () => {
       testFormula('EXP(1)', {}, Math.E, 'EXP 1');
       testFormula('EXP(0)', {}, 1, 'EXP 0');
       testFormula('EXP(2)', {}, Math.exp(2), 'EXP 2');
-      testFormulaError('EXP("text")', {}, 'Argument 1 of EXP must be a number in EXP("text")', 'EXP text input');
-      testFormulaError('EXP()', {}, 'Not enough arguments 0/1 in EXP()', 'EXP no arguments');
-      testFormulaError('EXP(1, 2)', {}, 'Too many arguments 2/1 in EXP(1, 2)', 'EXP too many arguments');
+      testFormulaError(
+        'EXP("text")',
+        {},
+        'Argument 1 of EXP must be a number in EXP("text")',
+        'EXP text input'
+      );
+      testFormulaError(
+        'EXP()',
+        {},
+        'Not enough arguments 0/1 in EXP()',
+        'EXP no arguments'
+      );
+      testFormulaError(
+        'EXP(1, 2)',
+        {},
+        'Too many arguments 2/1 in EXP(1, 2)',
+        'EXP too many arguments'
+      );
     });
 
     // LN
     describe('LN', () => {
       testFormula('LN(EXP(1))', {}, 1, 'LN(e)');
       testFormula('LN(1)', {}, 0, 'LN 1');
-      testFormulaError('LN("text")', {}, 'Argument 1 of LN must be a number in LN("text")', 'LN text input');
-      testFormulaError('LN(0)', {}, 'Argument 1 of LN must be a positive number in LN(0)', 'LN zero');
-      testFormulaError('LN(-1)', {}, 'Argument 1 of LN must be a positive number in LN(-1)', 'LN negative');
-      testFormulaError('LN()', {}, 'Not enough arguments 0/1 in LN()', 'LN no arguments');
-      testFormulaError('LN(1, 2)', {}, 'Too many arguments 2/1 in LN(1, 2)', 'LN too many arguments');
+      testFormulaError(
+        'LN("text")',
+        {},
+        'Argument 1 of LN must be a number in LN("text")',
+        'LN text input'
+      );
+      testFormulaError(
+        'LN(0)',
+        {},
+        'Argument 1 of LN must be a positive number in LN(0)',
+        'LN zero'
+      );
+      testFormulaError(
+        'LN(-1)',
+        {},
+        'Argument 1 of LN must be a positive number in LN(-1)',
+        'LN negative'
+      );
+      testFormulaError(
+        'LN()',
+        {},
+        'Not enough arguments 0/1 in LN()',
+        'LN no arguments'
+      );
+      testFormulaError(
+        'LN(1, 2)',
+        {},
+        'Too many arguments 2/1 in LN(1, 2)',
+        'LN too many arguments'
+      );
     });
 
     // LOG
@@ -514,11 +997,36 @@ describe('formula_eval', () => {
       testFormula('LOG(10)', {}, 1, 'LOG 10');
       testFormula('LOG(100)', {}, 2, 'LOG 100');
       testFormula('LOG(1)', {}, 0, 'LOG 1');
-      testFormulaError('LOG("text")', {}, 'Argument 1 of LOG must be a number in LOG("text")', 'LOG text input');
-      testFormulaError('LOG(0)', {}, 'Argument 1 of LOG must be a positive number in LOG(0)', 'LOG zero');
-      testFormulaError('LOG(-1)', {}, 'Argument 1 of LOG must be a positive number in LOG(-1)', 'LOG negative');
-      testFormulaError('LOG()', {}, 'Not enough arguments 0/1 in LOG()', 'LOG no arguments');
-      testFormulaError('LOG(1, 2)', {}, 'Too many arguments 2/1 in LOG(1, 2)', 'LOG too many arguments');
+      testFormulaError(
+        'LOG("text")',
+        {},
+        'Argument 1 of LOG must be a number in LOG("text")',
+        'LOG text input'
+      );
+      testFormulaError(
+        'LOG(0)',
+        {},
+        'Argument 1 of LOG must be a positive number in LOG(0)',
+        'LOG zero'
+      );
+      testFormulaError(
+        'LOG(-1)',
+        {},
+        'Argument 1 of LOG must be a positive number in LOG(-1)',
+        'LOG negative'
+      );
+      testFormulaError(
+        'LOG()',
+        {},
+        'Not enough arguments 0/1 in LOG()',
+        'LOG no arguments'
+      );
+      testFormulaError(
+        'LOG(1, 2)',
+        {},
+        'Too many arguments 2/1 in LOG(1, 2)',
+        'LOG too many arguments'
+      );
     });
 
     // MAX
@@ -527,9 +1035,24 @@ describe('formula_eval', () => {
       testFormula('MAX(10, 0, -10)', {}, 10, 'MAX positive, zero, negative');
       testFormula('MAX(5)', {}, 5, 'MAX single number');
       testFormula('MAX(10, 5, 20, 1)', {}, 20, 'MAX multiple numbers');
-      testFormulaError('MAX(5, "text")', {}, 'Argument 2 of MAX must be a number in MAX(5, "text")', 'MAX text input');
-      testFormulaError('MAX("text", 5)', {}, 'Argument 1 of MAX must be a number in MAX("text", 5)', 'MAX text input first');
-      testFormulaError('MAX()', {}, 'Not enough arguments 0/1 in MAX()', 'MAX no arguments');
+      testFormulaError(
+        'MAX(5, "text")',
+        {},
+        'Argument 2 of MAX must be a number in MAX(5, "text")',
+        'MAX text input'
+      );
+      testFormulaError(
+        'MAX("text", 5)',
+        {},
+        'Argument 1 of MAX must be a number in MAX("text", 5)',
+        'MAX text input first'
+      );
+      testFormulaError(
+        'MAX()',
+        {},
+        'Not enough arguments 0/1 in MAX()',
+        'MAX no arguments'
+      );
     });
 
     // MCEILING
@@ -539,9 +1062,24 @@ describe('formula_eval', () => {
       testFormula('MCEILING(-5.7)', {}, -5, 'MCEILING negative number');
       testFormula('MCEILING(-5.2)', {}, -5, 'MCEILING negative number');
       testFormula('MCEILING(5)', {}, 5, 'MCEILING integer');
-      testFormulaError('MCEILING("text")', {}, 'Argument 1 of MCEILING must be a number in MCEILING("text")', 'MCEILING text input');
-      testFormulaError('MCEILING()', {}, 'Not enough arguments 0/1 in MCEILING()', 'MCEILING no arguments');
-      testFormulaError('MCEILING(1, 2)', {}, 'Too many arguments 2/1 in MCEILING(1, 2)', 'MCEILING too many arguments');
+      testFormulaError(
+        'MCEILING("text")',
+        {},
+        'Argument 1 of MCEILING must be a number in MCEILING("text")',
+        'MCEILING text input'
+      );
+      testFormulaError(
+        'MCEILING()',
+        {},
+        'Not enough arguments 0/1 in MCEILING()',
+        'MCEILING no arguments'
+      );
+      testFormulaError(
+        'MCEILING(1, 2)',
+        {},
+        'Too many arguments 2/1 in MCEILING(1, 2)',
+        'MCEILING too many arguments'
+      );
     });
 
     // MFLOOR
@@ -551,9 +1089,24 @@ describe('formula_eval', () => {
       testFormula('MFLOOR(-5.7)', {}, -6, 'MFLOOR negative number');
       testFormula('MFLOOR(-5.2)', {}, -6, 'MFLOOR negative number');
       testFormula('MFLOOR(5)', {}, 5, 'MFLOOR integer');
-      testFormulaError('MFLOOR("text")', {}, 'Argument 1 of MFLOOR must be a number in MFLOOR("text")', 'MFLOOR text input');
-      testFormulaError('MFLOOR()', {}, 'Not enough arguments 0/1 in MFLOOR()', 'MFLOOR no arguments');
-      testFormulaError('MFLOOR(1, 2)', {}, 'Too many arguments 2/1 in MFLOOR(1, 2)', 'MFLOOR too many arguments');
+      testFormulaError(
+        'MFLOOR("text")',
+        {},
+        'Argument 1 of MFLOOR must be a number in MFLOOR("text")',
+        'MFLOOR text input'
+      );
+      testFormulaError(
+        'MFLOOR()',
+        {},
+        'Not enough arguments 0/1 in MFLOOR()',
+        'MFLOOR no arguments'
+      );
+      testFormulaError(
+        'MFLOOR(1, 2)',
+        {},
+        'Too many arguments 2/1 in MFLOOR(1, 2)',
+        'MFLOOR too many arguments'
+      );
     });
 
     // MIN
@@ -562,9 +1115,24 @@ describe('formula_eval', () => {
       testFormula('MIN(10, 0, -10)', {}, -10, 'MIN positive, zero, negative');
       testFormula('MIN(5)', {}, 5, 'MIN single number');
       testFormula('MIN(10, 5, 20, 1)', {}, 1, 'MIN multiple numbers');
-      testFormulaError('MIN(5, "text")', {}, 'Argument 2 of MIN must be a number in MIN(5, "text")', 'MIN text input');
-      testFormulaError('MIN("text", 5)', {}, 'Argument 1 of MIN must be a number in MIN("text", 5)', 'MIN text input first');
-      testFormulaError('MIN()', {}, 'Not enough arguments 0/1 in MIN()', 'MIN no arguments');
+      testFormulaError(
+        'MIN(5, "text")',
+        {},
+        'Argument 2 of MIN must be a number in MIN(5, "text")',
+        'MIN text input'
+      );
+      testFormulaError(
+        'MIN("text", 5)',
+        {},
+        'Argument 1 of MIN must be a number in MIN("text", 5)',
+        'MIN text input first'
+      );
+      testFormulaError(
+        'MIN()',
+        {},
+        'Not enough arguments 0/1 in MIN()',
+        'MIN no arguments'
+      );
     });
 
     // MOD
@@ -574,37 +1142,117 @@ describe('formula_eval', () => {
       testFormula('MOD(-10, 3)', {}, -1, 'MOD -10, 3 (JS behavior)');
       testFormula('MOD(-10, -3)', {}, -1, 'MOD -10, -3 (JS behavior)');
       testFormula('MOD(10, 10)', {}, 0, 'MOD 10, 10');
-      testFormulaError('MOD(10, 0)', {}, 'Argument 2 of MOD cannot be zero in MOD(10, 0)', 'MOD divisor zero');
-      testFormulaError('MOD("text", 3)', {}, 'Argument 1 of MOD must be a number in MOD("text", 3)', 'MOD text input for arg1');
-      testFormulaError('MOD(10, "text")', {}, 'Argument 2 of MOD must be a number in MOD(10, "text")', 'MOD text input for arg2');
-      testFormulaError('MOD()', {}, 'Not enough arguments 0/2 in MOD()', 'MOD no arguments');
-      testFormulaError('MOD(1)', {}, 'Not enough arguments 1/2 in MOD(1)', 'MOD one argument');
-      testFormulaError('MOD(1, 2, 3)', {}, 'Too many arguments 3/2 in MOD(1, 2, 3)', 'MOD too many arguments');
+      testFormulaError(
+        'MOD(10, 0)',
+        {},
+        'Argument 2 of MOD cannot be zero in MOD(10, 0)',
+        'MOD divisor zero'
+      );
+      testFormulaError(
+        'MOD("text", 3)',
+        {},
+        'Argument 1 of MOD must be a number in MOD("text", 3)',
+        'MOD text input for arg1'
+      );
+      testFormulaError(
+        'MOD(10, "text")',
+        {},
+        'Argument 2 of MOD must be a number in MOD(10, "text")',
+        'MOD text input for arg2'
+      );
+      testFormulaError(
+        'MOD()',
+        {},
+        'Not enough arguments 0/2 in MOD()',
+        'MOD no arguments'
+      );
+      testFormulaError(
+        'MOD(1)',
+        {},
+        'Not enough arguments 1/2 in MOD(1)',
+        'MOD one argument'
+      );
+      testFormulaError(
+        'MOD(1, 2, 3)',
+        {},
+        'Too many arguments 3/2 in MOD(1, 2, 3)',
+        'MOD too many arguments'
+      );
     });
 
     // PI
     describe('PI', () => {
       testFormula('PI()', {}, Math.PI, 'PI');
-      testFormulaError('PI(1)', {}, 'Too many arguments 1/0 in PI(1)', 'PI with argument');
+      testFormulaError(
+        'PI(1)',
+        {},
+        'Too many arguments 1/0 in PI(1)',
+        'PI with argument'
+      );
     });
 
     // ROUND
     describe('ROUND', () => {
       testFormula('ROUND(3.14159, 2)', {}, 3.14, 'ROUND 3.14159 to 2 digits');
       testFormula('ROUND(3.14159, 0)', {}, 3, 'ROUND 3.14159 to 0 digits');
-      testFormula('ROUND(12345.67, -2)', {}, 12300, 'ROUND 12345.67 to -2 digits');
-      testFormula('ROUND(3.5, 0)', {}, 4, 'ROUND 3.5 to 0 digits (round half up)');
-      testFormula('ROUND(2.5, 0)', {}, 3, 'ROUND 2.5 to 0 digits (JS Math.round behavior - round half towards +Infinity)'); // Math.round(2.5) is 3
+      testFormula(
+        'ROUND(12345.67, -2)',
+        {},
+        12300,
+        'ROUND 12345.67 to -2 digits'
+      );
+      testFormula(
+        'ROUND(3.5, 0)',
+        {},
+        4,
+        'ROUND 3.5 to 0 digits (round half up)'
+      );
+      testFormula(
+        'ROUND(2.5, 0)',
+        {},
+        3,
+        'ROUND 2.5 to 0 digits (JS Math.round behavior - round half towards +Infinity)'
+      ); // Math.round(2.5) is 3
       testFormula('ROUND(1.2345, 8)', {}, 1.2345, 'ROUND 1.2345 to 8 digits');
       testFormula('ROUND(2.7,0)', {}, 3, 'ROUND 2.7 to 0 digits');
       testFormula('ROUND(2.499,0)', {}, 2, 'ROUND 2.499 to 0 digits');
       testFormula('ROUND(123.456, -1)', {}, 120, 'ROUND 123.456 to -1 digits');
-      testFormulaError('ROUND("text", 2)', {}, 'Argument 1 of ROUND must be a number in ROUND("text", 2)', 'ROUND text input for arg1');
-      testFormulaError('ROUND(3.14, "text")', {}, 'Argument 2 of ROUND must be a number in ROUND(3.14, "text")', 'ROUND text input for arg2');
-      testFormulaError('ROUND(3.14, 1.5)', {}, 'Argument 2 of ROUND must be an integer in ROUND(3.14, 1.5)', 'ROUND non-integer num_digits');
-      testFormulaError('ROUND()', {}, 'Not enough arguments 0/2 in ROUND()', 'ROUND no arguments');
-      testFormulaError('ROUND(1)', {}, 'Not enough arguments 1/2 in ROUND(1)', 'ROUND one argument');
-      testFormulaError('ROUND(1, 2, 3)', {}, 'Too many arguments 3/2 in ROUND(1, 2, 3)', 'ROUND too many arguments');
+      testFormulaError(
+        'ROUND("text", 2)',
+        {},
+        'Argument 1 of ROUND must be a number in ROUND("text", 2)',
+        'ROUND text input for arg1'
+      );
+      testFormulaError(
+        'ROUND(3.14, "text")',
+        {},
+        'Argument 2 of ROUND must be a number in ROUND(3.14, "text")',
+        'ROUND text input for arg2'
+      );
+      testFormulaError(
+        'ROUND(3.14, 1.5)',
+        {},
+        'Argument 2 of ROUND must be an integer in ROUND(3.14, 1.5)',
+        'ROUND non-integer num_digits'
+      );
+      testFormulaError(
+        'ROUND()',
+        {},
+        'Not enough arguments 0/2 in ROUND()',
+        'ROUND no arguments'
+      );
+      testFormulaError(
+        'ROUND(1)',
+        {},
+        'Not enough arguments 1/2 in ROUND(1)',
+        'ROUND one argument'
+      );
+      testFormulaError(
+        'ROUND(1, 2, 3)',
+        {},
+        'Too many arguments 3/2 in ROUND(1, 2, 3)',
+        'ROUND too many arguments'
+      );
     });
 
     // SIN
@@ -612,9 +1260,24 @@ describe('formula_eval', () => {
       testFormula('SIN(0)', {}, 0, 'SIN 0');
       testFormula('SIN(PI()/2)', {}, 1, 'SIN PI/2');
       testFormula('SIN(PI())', {}, Math.sin(Math.PI), 'SIN PI (close to 0)');
-      testFormulaError('SIN("text")', {}, 'Argument 1 of SIN must be a number in SIN("text")', 'SIN text input');
-      testFormulaError('SIN()', {}, 'Not enough arguments 0/1 in SIN()', 'SIN no arguments');
-      testFormulaError('SIN(1, 2)', {}, 'Too many arguments 2/1 in SIN(1, 2)', 'SIN too many arguments');
+      testFormulaError(
+        'SIN("text")',
+        {},
+        'Argument 1 of SIN must be a number in SIN("text")',
+        'SIN text input'
+      );
+      testFormulaError(
+        'SIN()',
+        {},
+        'Not enough arguments 0/1 in SIN()',
+        'SIN no arguments'
+      );
+      testFormulaError(
+        'SIN(1, 2)',
+        {},
+        'Too many arguments 2/1 in SIN(1, 2)',
+        'SIN too many arguments'
+      );
     });
 
     // SQRT
@@ -622,41 +1285,146 @@ describe('formula_eval', () => {
       testFormula('SQRT(9)', {}, 3, 'SQRT 9');
       testFormula('SQRT(2)', {}, Math.SQRT2, 'SQRT 2');
       testFormula('SQRT(0)', {}, 0, 'SQRT 0');
-      testFormulaError('SQRT(-1)', {}, 'Argument 1 of SQRT must be a non-negative number in SQRT(-1)', 'SQRT negative');
-      testFormulaError('SQRT("text")', {}, 'Argument 1 of SQRT must be a number in SQRT("text")', 'SQRT text input');
-      testFormulaError('SQRT()', {}, 'Not enough arguments 0/1 in SQRT()', 'SQRT no arguments');
-      testFormulaError('SQRT(1, 2)', {}, 'Too many arguments 2/1 in SQRT(1, 2)', 'SQRT too many arguments');
+      testFormulaError(
+        'SQRT(-1)',
+        {},
+        'Argument 1 of SQRT must be a non-negative number in SQRT(-1)',
+        'SQRT negative'
+      );
+      testFormulaError(
+        'SQRT("text")',
+        {},
+        'Argument 1 of SQRT must be a number in SQRT("text")',
+        'SQRT text input'
+      );
+      testFormulaError(
+        'SQRT()',
+        {},
+        'Not enough arguments 0/1 in SQRT()',
+        'SQRT no arguments'
+      );
+      testFormulaError(
+        'SQRT(1, 2)',
+        {},
+        'Too many arguments 2/1 in SQRT(1, 2)',
+        'SQRT too many arguments'
+      );
     });
 
     // TAN
     describe('TAN', () => {
       testFormula('TAN(0)', {}, 0, 'TAN 0');
-      testFormula('TAN(PI()/4)', {}, Math.tan(Math.PI/4), 'TAN PI/4 (close to 1)'); // Using Math.tan for precision
-      testFormula('TAN(PI()/2)', {}, Math.tan(Math.PI/2), 'TAN PI/2 (large number)');
-      testFormulaError('TAN("text")', {}, 'Argument 1 of TAN must be a number in TAN("text")', 'TAN text input');
-      testFormulaError('TAN()', {}, 'Not enough arguments 0/1 in TAN()', 'TAN no arguments');
-      testFormulaError('TAN(1, 2)', {}, 'Too many arguments 2/1 in TAN(1, 2)', 'TAN too many arguments');
+      testFormula(
+        'TAN(PI()/4)',
+        {},
+        Math.tan(Math.PI / 4),
+        'TAN PI/4 (close to 1)'
+      ); // Using Math.tan for precision
+      testFormula(
+        'TAN(PI()/2)',
+        {},
+        Math.tan(Math.PI / 2),
+        'TAN PI/2 (large number)'
+      );
+      testFormulaError(
+        'TAN("text")',
+        {},
+        'Argument 1 of TAN must be a number in TAN("text")',
+        'TAN text input'
+      );
+      testFormulaError(
+        'TAN()',
+        {},
+        'Not enough arguments 0/1 in TAN()',
+        'TAN no arguments'
+      );
+      testFormulaError(
+        'TAN(1, 2)',
+        {},
+        'Too many arguments 2/1 in TAN(1, 2)',
+        'TAN too many arguments'
+      );
     });
 
     // TRUNC
     describe('TRUNC', () => {
       testFormula('TRUNC(8.9)', {}, 8, 'TRUNC positive');
       testFormula('TRUNC(-8.9)', {}, -8, 'TRUNC negative');
-      testFormula('TRUNC(12.345, 1)', {}, 12.3, 'TRUNC positive with num_digits');
-      testFormula('TRUNC(12.345, 0)', {}, 12, 'TRUNC positive with 0 num_digits');
-      testFormula('TRUNC(12.999, 2)', {}, 12.99, 'TRUNC positive with num_digits, no rounding');
-      testFormula('TRUNC(123.456, -1)', {}, 120, 'TRUNC positive with negative num_digits');
-      testFormula('TRUNC(123.456, -2)', {}, 100, 'TRUNC positive with large negative num_digits');
-      testFormula('TRUNC(-123.456, -1)', {}, -120, 'TRUNC negative with negative num_digits');
-      testFormula('TRUNC(-123.456, -2)', {}, -100, 'TRUNC negative with large negative num_digits');
+      testFormula(
+        'TRUNC(12.345, 1)',
+        {},
+        12.3,
+        'TRUNC positive with num_digits'
+      );
+      testFormula(
+        'TRUNC(12.345, 0)',
+        {},
+        12,
+        'TRUNC positive with 0 num_digits'
+      );
+      testFormula(
+        'TRUNC(12.999, 2)',
+        {},
+        12.99,
+        'TRUNC positive with num_digits, no rounding'
+      );
+      testFormula(
+        'TRUNC(123.456, -1)',
+        {},
+        120,
+        'TRUNC positive with negative num_digits'
+      );
+      testFormula(
+        'TRUNC(123.456, -2)',
+        {},
+        100,
+        'TRUNC positive with large negative num_digits'
+      );
+      testFormula(
+        'TRUNC(-123.456, -1)',
+        {},
+        -120,
+        'TRUNC negative with negative num_digits'
+      );
+      testFormula(
+        'TRUNC(-123.456, -2)',
+        {},
+        -100,
+        'TRUNC negative with large negative num_digits'
+      );
       testFormula('TRUNC(456.123, -3)', {}, 0, 'TRUNC to zero');
       testFormula('TRUNC(-456.123, -3)', {}, -0, 'TRUNC to zero negative');
       testFormula('TRUNC(1.23)', {}, 1, 'TRUNC with one argument'); // num_digits defaults to 0
-      testFormulaError('TRUNC("text")', {}, 'Argument 1 of TRUNC must be a number in TRUNC("text")', 'TRUNC text input for arg1');
-      testFormulaError('TRUNC(12.3, "text")', {}, 'Argument 2 of TRUNC must be a number in TRUNC(12.3, "text")', 'TRUNC text input for arg2');
-      testFormulaError('TRUNC(12.3, 1.5)', {}, 'Argument 2 of TRUNC must be an integer in TRUNC(12.3, 1.5)', 'TRUNC non-integer num_digits');
-      testFormulaError('TRUNC()', {}, 'Not enough arguments 0/1 in TRUNC()', 'TRUNC no arguments');
-      testFormulaError('TRUNC(1, 2, 3)', {}, 'Too many arguments 3/2 in TRUNC(1, 2, 3)', 'TRUNC too many arguments');
+      testFormulaError(
+        'TRUNC("text")',
+        {},
+        'Argument 1 of TRUNC must be a number in TRUNC("text")',
+        'TRUNC text input for arg1'
+      );
+      testFormulaError(
+        'TRUNC(12.3, "text")',
+        {},
+        'Argument 2 of TRUNC must be a number in TRUNC(12.3, "text")',
+        'TRUNC text input for arg2'
+      );
+      testFormulaError(
+        'TRUNC(12.3, 1.5)',
+        {},
+        'Argument 2 of TRUNC must be an integer in TRUNC(12.3, 1.5)',
+        'TRUNC non-integer num_digits'
+      );
+      testFormulaError(
+        'TRUNC()',
+        {},
+        'Not enough arguments 0/1 in TRUNC()',
+        'TRUNC no arguments'
+      );
+      testFormulaError(
+        'TRUNC(1, 2, 3)',
+        {},
+        'Too many arguments 3/2 in TRUNC(1, 2, 3)',
+        'TRUNC too many arguments'
+      );
     });
   });
 
@@ -664,17 +1432,32 @@ describe('formula_eval', () => {
     // Basic pattern matching
     testFormula('REGEX("Hello", "Hello")', {}, true, 'REGEX exact match');
     testFormula('REGEX("Hello", "hello")', {}, false, 'REGEX case sensitive');
-    testFormula('REGEX("Hello World", "Hello")', {}, true, 'REGEX partial match');
-    testFormula('REGEX("Hello World", "World")', {}, true, 'REGEX partial match end');
+    testFormula(
+      'REGEX("Hello World", "Hello")',
+      {},
+      true,
+      'REGEX partial match'
+    );
+    testFormula(
+      'REGEX("Hello World", "World")',
+      {},
+      true,
+      'REGEX partial match end'
+    );
     testFormula('REGEX("Hello", "World")', {}, false, 'REGEX no match');
-    
+
     // Character classes and ranges
     testFormula('REGEX("abc", "[a-z]+")', {}, true, 'REGEX lowercase letters');
     testFormula('REGEX("ABC", "[A-Z]+")', {}, true, 'REGEX uppercase letters');
     testFormula('REGEX("123", "[0-9]+")', {}, true, 'REGEX digits');
     testFormula('REGEX("123", "\\\\d+")', {}, true, 'REGEX digit shorthand');
-    testFormula('REGEX("Hello123", "[a-zA-Z0-9]+")', {}, true, 'REGEX alphanumeric');
-    
+    testFormula(
+      'REGEX("Hello123", "[a-zA-Z0-9]+")',
+      {},
+      true,
+      'REGEX alphanumeric'
+    );
+
     // Quantifiers
     testFormula('REGEX("a", "a?")', {}, true, 'REGEX zero or one');
     testFormula('REGEX("", "a?")', {}, true, 'REGEX zero matches');
@@ -683,81 +1466,237 @@ describe('formula_eval', () => {
     testFormula('REGEX("", "a+")', {}, false, 'REGEX one or more no match');
     testFormula('REGEX("aa", "a{2}")', {}, true, 'REGEX exact count');
     testFormula('REGEX("aaa", "a{2,4}")', {}, true, 'REGEX range count');
-    
+
     // Anchors
-    testFormula('REGEX("Hello", "^Hello")', {}, true, 'REGEX start anchor match');
-    testFormula('REGEX("Say Hello", "^Hello")', {}, false, 'REGEX start anchor no match');
+    testFormula(
+      'REGEX("Hello", "^Hello")',
+      {},
+      true,
+      'REGEX start anchor match'
+    );
+    testFormula(
+      'REGEX("Say Hello", "^Hello")',
+      {},
+      false,
+      'REGEX start anchor no match'
+    );
     testFormula('REGEX("Hello", "Hello$")', {}, true, 'REGEX end anchor match');
-    testFormula('REGEX("Hello World", "Hello$")', {}, false, 'REGEX end anchor no match');
+    testFormula(
+      'REGEX("Hello World", "Hello$")',
+      {},
+      false,
+      'REGEX end anchor no match'
+    );
     testFormula('REGEX("Hello", "^Hello$")', {}, true, 'REGEX full match');
-    testFormula('REGEX("Hello World", "^Hello$")', {}, false, 'REGEX full match no match');
-    
+    testFormula(
+      'REGEX("Hello World", "^Hello$")',
+      {},
+      false,
+      'REGEX full match no match'
+    );
+
     // Email validation examples (from Salesforce docs)
-    testFormula('REGEX("test@example.com", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, true, 'REGEX email valid');
-    testFormula('REGEX("invalid-email", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, false, 'REGEX email invalid');
-    testFormula('REGEX("user@domain.co", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")', {}, true, 'REGEX email short domain');
-    
+    testFormula(
+      'REGEX("test@example.com", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")',
+      {},
+      true,
+      'REGEX email valid'
+    );
+    testFormula(
+      'REGEX("invalid-email", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")',
+      {},
+      false,
+      'REGEX email invalid'
+    );
+    testFormula(
+      'REGEX("user@domain.co", "[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\\\.[A-Za-z]{2,}")',
+      {},
+      true,
+      'REGEX email short domain'
+    );
+
     // Phone number validation examples
-    testFormula('REGEX("(555) 123-4567", "\\\\([0-9]{3}\\\\) [0-9]{3}-[0-9]{4}")', {}, true, 'REGEX phone format 1');
-    testFormula('REGEX("555-123-4567", "[0-9]{3}-[0-9]{3}-[0-9]{4}")', {}, true, 'REGEX phone format 2');
-    testFormula('REGEX("5551234567", "[0-9]{10}")', {}, true, 'REGEX phone format 3');
-    testFormula('REGEX("555-123-456", "[0-9]{3}-[0-9]{3}-[0-9]{4}")', {}, false, 'REGEX phone invalid');
-    
+    testFormula(
+      'REGEX("(555) 123-4567", "\\\\([0-9]{3}\\\\) [0-9]{3}-[0-9]{4}")',
+      {},
+      true,
+      'REGEX phone format 1'
+    );
+    testFormula(
+      'REGEX("555-123-4567", "[0-9]{3}-[0-9]{3}-[0-9]{4}")',
+      {},
+      true,
+      'REGEX phone format 2'
+    );
+    testFormula(
+      'REGEX("5551234567", "[0-9]{10}")',
+      {},
+      true,
+      'REGEX phone format 3'
+    );
+    testFormula(
+      'REGEX("555-123-456", "[0-9]{3}-[0-9]{3}-[0-9]{4}")',
+      {},
+      false,
+      'REGEX phone invalid'
+    );
+
     // ZIP code validation (from Salesforce docs)
-    testFormula('REGEX("12345", "\\\\d{5}(-\\\\d{4})?")', {}, true, 'REGEX ZIP 5 digits');
-    testFormula('REGEX("12345-6789", "\\\\d{5}(-\\\\d{4})?")', {}, true, 'REGEX ZIP+4');
-    testFormula('REGEX("1234", "\\\\d{5}(-\\\\d{4})?")', {}, false, 'REGEX ZIP too short');
-    
+    testFormula(
+      'REGEX("12345", "\\\\d{5}(-\\\\d{4})?")',
+      {},
+      true,
+      'REGEX ZIP 5 digits'
+    );
+    testFormula(
+      'REGEX("12345-6789", "\\\\d{5}(-\\\\d{4})?")',
+      {},
+      true,
+      'REGEX ZIP+4'
+    );
+    testFormula(
+      'REGEX("1234", "\\\\d{5}(-\\\\d{4})?")',
+      {},
+      false,
+      'REGEX ZIP too short'
+    );
+
     // SSN validation (from Salesforce docs)
-    testFormula('REGEX("123-45-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")', {}, true, 'REGEX SSN with dashes');
-    testFormula('REGEX("123456789", "\\\\d{9}")', {}, true, 'REGEX SSN no dashes');
-    testFormula('REGEX("12-345-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")', {}, false, 'REGEX SSN wrong format');
-    
+    testFormula(
+      'REGEX("123-45-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")',
+      {},
+      true,
+      'REGEX SSN with dashes'
+    );
+    testFormula(
+      'REGEX("123456789", "\\\\d{9}")',
+      {},
+      true,
+      'REGEX SSN no dashes'
+    );
+    testFormula(
+      'REGEX("12-345-6789", "\\\\d{3}-\\\\d{2}-\\\\d{4}")',
+      {},
+      false,
+      'REGEX SSN wrong format'
+    );
+
     // Credit card validation (from Salesforce docs)
-    testFormula('REGEX("1234-1234-1234-1234", "\\\\d{4}-\\\\d{4}-\\\\d{4}-\\\\d{4}")', {}, true, 'REGEX credit card with dashes');
-    testFormula('REGEX("1234123412341234", "\\\\d{16}")', {}, true, 'REGEX credit card no dashes');
-    
+    testFormula(
+      'REGEX("1234-1234-1234-1234", "\\\\d{4}-\\\\d{4}-\\\\d{4}-\\\\d{4}")',
+      {},
+      true,
+      'REGEX credit card with dashes'
+    );
+    testFormula(
+      'REGEX("1234123412341234", "\\\\d{16}")',
+      {},
+      true,
+      'REGEX credit card no dashes'
+    );
+
     // California Driver License example (from Salesforce docs)
-    testFormula('REGEX("C1234567", "[A-Z]\\\\d{7}")', {}, true, 'REGEX CA license');
-    testFormula('REGEX("1234567", "[A-Z]\\\\d{7}")', {}, false, 'REGEX CA license no letter');
-    
+    testFormula(
+      'REGEX("C1234567", "[A-Z]\\\\d{7}")',
+      {},
+      true,
+      'REGEX CA license'
+    );
+    testFormula(
+      'REGEX("1234567", "[A-Z]\\\\d{7}")',
+      {},
+      false,
+      'REGEX CA license no letter'
+    );
+
     // Special characters and escaping
-    testFormula('REGEX("test.com", "test\\\\.com")', {}, true, 'REGEX escaped dot');
-    testFormula('REGEX("testXcom", "test\\\\.com")', {}, false, 'REGEX escaped dot no match');
+    testFormula(
+      'REGEX("test.com", "test\\\\.com")',
+      {},
+      true,
+      'REGEX escaped dot'
+    );
+    testFormula(
+      'REGEX("testXcom", "test\\\\.com")',
+      {},
+      false,
+      'REGEX escaped dot no match'
+    );
     testFormula('REGEX("test+", "test\\\\+")', {}, true, 'REGEX escaped plus');
-    testFormula('REGEX("test*", "test\\\\*")', {}, true, 'REGEX escaped asterisk');
-    
+    testFormula(
+      'REGEX("test*", "test\\\\*")',
+      {},
+      true,
+      'REGEX escaped asterisk'
+    );
+
     // Word boundaries
-    testFormula('REGEX("the cat", "\\\\bcat\\\\b")', {}, true, 'REGEX word boundary match');
-    testFormula('REGEX("concatenate", "\\\\bcat\\\\b")', {}, false, 'REGEX word boundary no match');
-    
+    testFormula(
+      'REGEX("the cat", "\\\\bcat\\\\b")',
+      {},
+      true,
+      'REGEX word boundary match'
+    );
+    testFormula(
+      'REGEX("concatenate", "\\\\bcat\\\\b")',
+      {},
+      false,
+      'REGEX word boundary no match'
+    );
+
     // Groups
-    testFormula('REGEX("hello world", "(hello|hi) world")', {}, true, 'REGEX group alternation match');
-    testFormula('REGEX("hi world", "(hello|hi) world")', {}, true, 'REGEX group alternation match 2');
-    testFormula('REGEX("hey world", "(hello|hi) world")', {}, false, 'REGEX group alternation no match');
-    
+    testFormula(
+      'REGEX("hello world", "(hello|hi) world")',
+      {},
+      true,
+      'REGEX group alternation match'
+    );
+    testFormula(
+      'REGEX("hi world", "(hello|hi) world")',
+      {},
+      true,
+      'REGEX group alternation match 2'
+    );
+    testFormula(
+      'REGEX("hey world", "(hello|hi) world")',
+      {},
+      false,
+      'REGEX group alternation no match'
+    );
+
     // Case with variables
-    testFormula('REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")', 
-               {Email: 'john.doe@example.com'}, true, 'REGEX email variable valid');
-    testFormula('REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")', 
-               {Email: 'invalid.email'}, false, 'REGEX email variable invalid');
-    
+    testFormula(
+      'REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")',
+      { Email: 'john.doe@example.com' },
+      true,
+      'REGEX email variable valid'
+    );
+    testFormula(
+      'REGEX(Email, "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}$")',
+      { Email: 'invalid.email' },
+      false,
+      'REGEX email variable invalid'
+    );
+
     // Empty string handling
     testFormula('REGEX("", ".*")', {}, true, 'REGEX empty string matches any');
-    testFormula('REGEX("", ".+")', {}, false, 'REGEX empty string no match required');
+    testFormula(
+      'REGEX("", ".+")',
+      {},
+      false,
+      'REGEX empty string no match required'
+    );
     testFormula('REGEX("test", "")', {}, true, 'REGEX empty pattern matches');
-    
+
     // Error cases
     testFormulaError('REGEX("test")', {}, 'Not enough arguments 1/2 in REGEX("test")', 'REGEX not enough arguments');
     testFormulaError('REGEX()', {}, 'Not enough arguments 0/2 in REGEX()', 'REGEX no arguments');
     testFormulaError('REGEX("test", "pattern", "extra")', {}, 'Too many arguments 3/2 in REGEX("test", "pattern", "extra")', 'REGEX too many arguments');
     testFormulaError('REGEX(123, "pattern")', {}, 'Argument 1 of REGEX must be a string in REGEX(123, "pattern")', 'REGEX first arg not string');
     testFormulaError('REGEX("test", 123)', {}, 'Argument 2 of REGEX must be a string in REGEX("test", 123)', 'REGEX second arg not string');
-    testFormulaError('REGEX("test", "[invalid")', {}, 'Invalid regular expression pattern: [invalid in REGEX("test", "[invalid")', 'REGEX invalid pattern');
+    testFormulaError('REGEX("test", "[invalid")', {}, 'Invalid regular expression pattern: [invalid - Invalid regular expression: /[invalid/: Unterminated character class in REGEX("test", "[invalid")', 'REGEX invalid pattern');
   });
 });
-
-
 
 /*
 Errors:
