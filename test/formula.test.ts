@@ -276,6 +276,41 @@ describe('formula_eval', () => {
     testFormulaError('BLANKVALUE("test")', {}, 'Not enough arguments 1/2 in BLANKVALUE("test")', 'BLANKVALUE with 1 argument');
   });
 
+  describe('INCLUDES - Multi-picklist function', () => {
+    // Basic multi-picklist functionality
+    testFormula('INCLUDES("1;2;3;4;5", "3")', {}, true, 'INCLUDES finds value in multi-picklist');
+    testFormula('INCLUDES("1;2;3;4;5", "6")', {}, false, 'INCLUDES does not find value in multi-picklist');
+    testFormula('INCLUDES("Option A;Option B;Option C", "Option B")', {}, true, 'INCLUDES finds text value in multi-picklist');
+    testFormula('INCLUDES("Option A;Option B;Option C", "Option D")', {}, false, 'INCLUDES does not find text value in multi-picklist');
+    
+    // Single value (no semicolons)
+    testFormula('INCLUDES("SingleValue", "SingleValue")', {}, true, 'INCLUDES finds exact match with single value');
+    testFormula('INCLUDES("SingleValue", "Other")', {}, false, 'INCLUDES does not find different single value');
+    
+    // Number comparisons (converted to strings)
+    testFormula('INCLUDES("1;2;3", 2)', {}, true, 'INCLUDES finds number in string multi-picklist');
+    testFormula('INCLUDES("1;2;3", 4)', {}, false, 'INCLUDES does not find number in string multi-picklist');
+    
+    // Edge cases
+    testFormula('INCLUDES("", "value")', {}, false, 'INCLUDES with empty string returns false');
+    testFormula('INCLUDES(null, "value")', {}, false, 'INCLUDES with null returns false');
+    testFormula('INCLUDES(undefined, "value")', {}, false, 'INCLUDES with undefined returns false');
+    testFormula('INCLUDES("value", "")', {}, false, 'INCLUDES searching for empty string returns false');
+    
+    // Variable usage
+    testFormula('INCLUDES(MultiPicklist, "B")', { MultiPicklist: "A;B;C" }, true, 'INCLUDES with variable containing multi-picklist');
+    testFormula('INCLUDES(MultiPicklist, "D")', { MultiPicklist: "A;B;C" }, false, 'INCLUDES with variable not containing value');
+    
+    // Partial matches should not work (exact match only)
+    testFormula('INCLUDES("Apple;Banana;Orange", "App")', {}, false, 'INCLUDES does not do partial matches');
+    testFormula('INCLUDES("Apple;Banana;Orange", "Apple")', {}, true, 'INCLUDES finds exact match');
+    
+    // Error cases
+    testFormulaError('INCLUDES("value")', {}, 'Not enough arguments 1/2 in INCLUDES("value")', 'INCLUDES with 1 argument');
+    testFormulaError('INCLUDES()', {}, 'Not enough arguments 0/2 in INCLUDES()', 'INCLUDES with no arguments');
+    testFormulaError('INCLUDES("a", "b", "c")', {}, 'Too many arguments 3/2 in INCLUDES("a", "b", "c")', 'INCLUDES with too many arguments');
+  });
+
   describe('Dynamic context', () => {
     testFormula('Amount', (variables: string[])=> {
       assert(variables.length === 1);

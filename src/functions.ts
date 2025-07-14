@@ -268,4 +268,22 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
       return Math.trunc(number / factor) * factor;
     }
   },
+  'INCLUDES': (...args: Array<() => unknown>) => {
+    const [multiPicklistArg, valueArg] = validateArgs(args, {min: 2, max: 2});
+    const multiPicklist = computeArg(multiPicklistArg);
+    const value = computeArg(valueArg);
+    
+    // Handle null/undefined/blank cases
+    if (multiPicklist === null || multiPicklist === undefined || multiPicklist === '') {
+      return false;
+    }
+    
+    // Convert both to strings for comparison
+    const multiPicklistStr = String(multiPicklist);
+    const valueStr = String(value);
+    
+    // Split by semicolon and check if value exists in the array
+    const values = multiPicklistStr.split(';');
+    return values.includes(valueStr);
+  },
 }

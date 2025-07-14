@@ -12,7 +12,7 @@ class FormulaDemo {
     private variablesView!: EditorView;
     private inputContainer: HTMLElement;
     private formulaVariables: HTMLElement;
-    private formula = 'IF(x +  y + nested.property > 0, "Yes", "No")';
+    private formula = 'IF(INCLUDES(skills, "TypeScript"), "Has TypeScript skills", "No TypeScript skills")';
     private demoVariables = {
       x: 10,
       nested: {
@@ -27,7 +27,13 @@ class FormulaDemo {
       firstName: "John",
       lastName: "Doe",
       age: 30,
-      balance: 1500.75
+      balance: 1500.75,
+      // Multi-picklist examples for INCLUDES function
+      skills: "JavaScript;TypeScript;Python;Java",
+      priorities: "High;Medium;Low",
+      departments: "Engineering;Sales;Marketing",
+      categories: "A;B;C;D;E",
+      singleValue: "OnlyOne"
     };
 
     constructor() {
