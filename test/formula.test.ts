@@ -305,6 +305,39 @@ describe('formula_eval', () => {
     testFormulaError('INCLUDES("value", false)', {}, 'Argument 2 of INCLUDES must be a string', 'INCLUDES with boolean value');
   });
 
+  describe('COUNTMATCHES - Multi-picklist counting function', () => {
+    testFormula('COUNTMATCHES("1;2;3;2;5", "2")', {}, 2, 'COUNTMATCHES counts multiple occurrences');
+    testFormula('COUNTMATCHES("1;2;3;4;5", "3")', {}, 1, 'COUNTMATCHES counts single occurrence');
+    testFormula('COUNTMATCHES("1;2;3;4;5", "6")', {}, 0, 'COUNTMATCHES counts zero when value not found');
+    testFormula('COUNTMATCHES("Option A;Option B;Option C", "Option B")', {}, 1, 'COUNTMATCHES counts value with space');
+    testFormula('COUNTMATCHES("Apple;Banana;Orange", "App")', {}, 0, 'COUNTMATCHES does not do partial matches');
+    testFormula('COUNTMATCHES("SingleValue", "SingleValue")', {}, 1, 'COUNTMATCHES counts exact match with single value');
+    testFormula('COUNTMATCHES("A;A;A;A", "A")', {}, 4, 'COUNTMATCHES counts all occurrences of same value');
+    testFormula('COUNTMATCHES("1;2;3", TEXT(2))', {}, 1, 'COUNTMATCHES finds number converted to string');
+    testFormula('COUNTMATCHES("1;2;3", TEXT(4))', {}, 0, 'COUNTMATCHES does not find number converted to string');
+
+    testFormula('COUNTMATCHES("", "value")', {}, 0, 'COUNTMATCHES with empty string returns 0');
+    testFormula('COUNTMATCHES("value", "")', {}, 0, 'COUNTMATCHES searching for empty string returns 0');
+    testFormula('COUNTMATCHES(";value;", "")', {}, 2, 'COUNTMATCHES counts empty values in semicolon-separated string');
+    testFormula('COUNTMATCHES("value;;value", "")', {}, 1, 'COUNTMATCHES counts single empty value between semicolons');
+
+    testFormula('COUNTMATCHES(items, "B")', { items: "A;B;C;B" }, 2, 'COUNTMATCHES with variable');
+    testFormula('COUNTMATCHES(items, "D")', { items: "A;B;C" }, 0, 'COUNTMATCHES with variable not containing value');
+
+    testFormulaError('COUNTMATCHES("value")', {}, 'Not enough arguments 1/2 in COUNTMATCHES("value")', 'COUNTMATCHES with 1 argument');
+    testFormulaError('COUNTMATCHES()', {}, 'Not enough arguments 0/2 in COUNTMATCHES()', 'COUNTMATCHES with no arguments');
+    testFormulaError('COUNTMATCHES("a", "b", "c")', {}, 'Too many arguments 3/2 in COUNTMATCHES("a", "b", "c")', 'COUNTMATCHES with too many arguments');
+
+    testFormulaError('COUNTMATCHES("1;2;3", 2)', {}, 'Argument 2 of COUNTMATCHES must be a string', 'COUNTMATCHES with number second argument');
+    testFormulaError('COUNTMATCHES(123, "2")', {}, 'Argument 1 of COUNTMATCHES must be a string', 'COUNTMATCHES with number first argument');
+    testFormulaError('COUNTMATCHES(true, "value")', {}, 'Argument 1 of COUNTMATCHES must be a string', 'COUNTMATCHES with boolean first argument');
+    testFormulaError('COUNTMATCHES("value", false)', {}, 'Argument 2 of COUNTMATCHES must be a string', 'COUNTMATCHES with boolean second argument');
+    testFormulaError('COUNTMATCHES(null, "value")', {}, 'Argument 1 of COUNTMATCHES must be a string', 'COUNTMATCHES with null first argument');
+    testFormulaError('COUNTMATCHES("value", null)', {}, 'Argument 2 of COUNTMATCHES must be a string', 'COUNTMATCHES with null second argument');
+    testFormulaError('COUNTMATCHES(undefined, "value")', {}, 'Argument 1 of COUNTMATCHES must be a string', 'COUNTMATCHES with undefined first argument');
+    testFormulaError('COUNTMATCHES("value", undefined)', {}, 'Argument 2 of COUNTMATCHES must be a string', 'COUNTMATCHES with undefined second argument');
+  });
+
   describe('Dynamic context', () => {
     testFormula('Amount', (variables: string[])=> {
       assert(variables.length === 1);

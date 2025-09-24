@@ -46,6 +46,10 @@ export const functions: CompletionType[] = [
     label: 'INCLUDES',
     apply: snippet(`INCLUDES(\${value}, \${"value"})`),
   },
+  {
+    label: 'COUNTMATCHES',
+    apply: snippet(`COUNTMATCH(\${value}, \${"value"})`),
+  },
 ]
 
 export const operators: CompletionType[] = '> < >= <= & + - * / AND OR'.split(' ').map((operator) => {

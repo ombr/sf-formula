@@ -281,4 +281,21 @@ export const defaultFunctions: Record<string, (...args: Array<()=> unknown>) => 
     const values = multiPicklist.split(';');
     return values.includes(value);
   },
+
+  'COUNTMATCHES': (...args: Array<() => unknown>) => {
+    const [separatedStringArg, valueToMatchArg] = validateArgs(args, {
+      min: 2,
+      max: 2,
+    });
+    const separatedString = computeArg(separatedStringArg);
+    const valueToMatch = computeArg(valueToMatchArg);
+
+    if (typeof separatedString !== 'string')
+      throw new Error('Argument 1 of COUNTMATCHES must be a string');
+    if (typeof valueToMatch !== 'string')
+      throw new Error('Argument 2 of COUNTMATCHES must be a string');
+
+    const values = separatedString.split(';');
+    return values.filter((value) => value === valueToMatch).length;
+  },
 }
